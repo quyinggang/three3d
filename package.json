@@ -1,0 +1,38 @@
+{
+  "name": "three3d",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "src/**/*.{vue,js,json}": "prettier --write",
+    "src/**/*.{vue,js}": "eslint --cache --fix"
+  },
+  "dependencies": {
+    "three": "^0.150.1",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.2.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "eslint": "^8.34.0",
+    "eslint-plugin-vue": "^9.9.0",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.4",
+    "vite": "^4.1.4",
+    "yorkie": "^2.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
