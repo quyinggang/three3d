@@ -1,23 +1,22 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import Home from "@/Home.vue";
-import configList from "./config";
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Home from '@/Home.vue'
+import configList from './config'
 
 const routes = [
   {
-    path: "/",
+    path: '/',
     name: 'home',
-    component: Home,
+    component: Home
   },
-  ...configList.map(item => {
+  ...configList.map((item) => {
     return {
       path: item.path,
-      name: item.name,
       component: () => import(`@/components/${item.componentName}.vue`)
     }
   })
-];
+]
 
 export default createRouter({
   history: createWebHashHistory(),
-  routes,
-});
+  routes
+})
