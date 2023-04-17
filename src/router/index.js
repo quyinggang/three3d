@@ -11,7 +11,7 @@ const routes = [
   ...configList.map((item) => {
     return {
       path: item.path,
-      component: () => import(`@/components/${item.componentName}.vue`)
+      component: () => import(`@/views/${item.componentName}.vue`)
     }
   })
 ]

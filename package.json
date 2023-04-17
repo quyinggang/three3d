@@ -14,8 +14,8 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "src/**/*.{vue,js,json}": "prettier --write",
-    "src/**/*.{vue,js}": "eslint --cache --fix"
+    "src/**/*.{vue,js}": "eslint --cache --fix",
+    "src/**/*.{vue,js,md,json}": "prettier --write"
   },
   "dependencies": {
     "three": "^0.150.1",
