@@ -6,6 +6,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
+const getMesh = () => {
+  const geometry = new THREE.BoxGeometry(1, 1, 1)
+  const material = new THREE.MeshBasicMaterial({
+    color: 0xb9d3ff
+  })
+  return new THREE.Mesh(geometry, material)
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -17,11 +25,7 @@ onMounted(() => {
   scene.background = new THREE.Color(0xbfe3dd)
 
   // 网格物体
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
-  const material = new THREE.MeshBasicMaterial({
-    color: 0xb9d3ff
-  })
-  const cube = new THREE.Mesh(geometry, material)
+  const cube = getMesh()
   scene.add(cube)
 
   // 坐标轴辅助
