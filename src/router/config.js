@@ -6,7 +6,7 @@ const configList = [
   },
   {
     path: '/room',
-    title: '小屋',
+    title: '黑夜中的人家',
     componentName: 'RoomScene'
   }
 ]
