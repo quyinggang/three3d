@@ -4,7 +4,7 @@
  * - layers分层机制
  * - 后处理效果
  * - 渲染器和深度缓冲区
- * - ShaderPass自定义后处理逻辑
+ * - ShaderPass自定义后处理逻辑，实现将两个渲染器画面混合
  */
 import { ref, onMounted, watch } from 'vue'
 import * as THREE from 'three'
