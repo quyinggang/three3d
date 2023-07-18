@@ -52,7 +52,7 @@ onMounted(() => {
 
   // 轨道控制器
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.addEventListener('change', render)
+  controls.addEventListener('change', () => render())
   render()
 })
 </script>

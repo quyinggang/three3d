@@ -13,6 +13,11 @@ const configList = [
     path: '/fly',
     title: '飞舞的光点',
     componentName: 'FlyScene'
+  },
+  {
+    path: '/glow',
+    title: '场景部分模型辉光',
+    componentName: 'GlowScene'
   }
 ]
 

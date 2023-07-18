@@ -151,7 +151,7 @@ onMounted(() => {
 
   // 轨道控制器
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.addEventListener('change', render)
+  controls.addEventListener('change', () => render())
   controls.enablePan = false
   // 缩放距离（PerspectiveCamera的设置）
   controls.minDistance = 10

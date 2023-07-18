@@ -4,7 +4,7 @@
  * - 粒子系统
  * - canvasTexture：canvas作为贴图来源
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import Stats from 'three/addons/libs/stats.module.js'
@@ -185,6 +185,10 @@ onMounted(() => {
   }
 
   render()
+
+  onBeforeUnmount(() => {
+    document.body.removeChild(stats.domElement)
+  })
 })
 </script>
 
