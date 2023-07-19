@@ -46,7 +46,7 @@ onMounted(() => {
   // 设置摄像机方向
   camera.lookAt(scene.position)
 
-  const renderTarget = new THREE.WebGLRenderTarget(width, height)
+  const renderTarget = new THREE.WebGLRenderTarget(width * dpr, height * dpr)
 
   // 创建模型
   const [greenBoxModel, boxModel] = createModels(renderTarget)
