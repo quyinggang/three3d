@@ -18,6 +18,11 @@ const configList = [
     path: '/glow',
     title: '场景部分模型辉光',
     componentName: 'GlowScene'
+  },
+  {
+    path: '/renderTarget',
+    title: '渲染目标对象',
+    componentName: 'RenderTarget'
   }
 ]
 
