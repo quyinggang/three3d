@@ -23,6 +23,11 @@ const configList = [
     path: '/renderTarget',
     title: '渲染目标对象',
     componentName: 'RenderTarget'
+  },
+  {
+    path: '/audio',
+    title: '音频可视化',
+    componentName: 'AudioScene'
   }
 ]
 

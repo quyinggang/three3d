@@ -6,3 +6,5 @@
 - 飞舞的光点：主要学习Points粒子系统、Canvas贴图应用
 - 场景部分模型辉光：主要学习分层机制、辉光后处理效果、渲染器深度缓冲区相关等知识
 - 渲染目标对象：WebGLRenderTarget的基本应用
+- 音频可视化：主要学习Audio、AudioAnalyser、射线拾取
+
