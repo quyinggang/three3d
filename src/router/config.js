@@ -28,6 +28,11 @@ const configList = [
     path: '/audio',
     title: '音频可视化',
     componentName: 'AudioScene'
+  },
+  {
+    path: '/viewport',
+    title: '分屏绘制',
+    componentName: 'ViewportScene'
   }
 ]
 
