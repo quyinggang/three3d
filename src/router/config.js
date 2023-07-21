@@ -33,6 +33,11 @@ const configList = [
     path: '/viewport',
     title: '分屏绘制',
     componentName: 'ViewportScene'
+  },
+  {
+    path: '/surroundLight',
+    title: '具象化灯光',
+    componentName: 'SurroundLight'
   }
 ]
 

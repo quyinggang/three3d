@@ -8,4 +8,4 @@
 - 渲染目标对象：WebGLRenderTarget的基本应用
 - 音频可视化：主要学习Audio、AudioAnalyser、射线拾取
 - 分屏绘制：主要学习裁剪测试、视口范围Viewport相关
-
+- 具象化灯光：主要学习光源的具象化、绕物体圆周运动算法
