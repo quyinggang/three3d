@@ -38,6 +38,11 @@ const configList = [
     path: '/surroundLight',
     title: '具象化灯光',
     componentName: 'SurroundLight'
+  },
+  {
+    path: '/preview',
+    title: '场景预览的N种方法',
+    componentName: 'PreviewScene'
   }
 ]
 
