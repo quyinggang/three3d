@@ -282,6 +282,7 @@ const applyViewportScheme = (width, height, canvasElement) => {
 const applyMultipleRenderScheme = (width, height, canvasElement, previewCanvasElement) => {
   const { scene, camera, renderer } = createBasic(width, height, canvasElement)
 
+  // 预览图可以采用正交相机来渲染
   const previewWidth = previewCanvasElement.clientWidth
   const previewHeight = previewCanvasElement.clientHeight
   const previewRenderer = new THREE.WebGLRenderer({
