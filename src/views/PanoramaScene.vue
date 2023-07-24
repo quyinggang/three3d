@@ -32,7 +32,7 @@ const createCubeScheme = () => {
   })
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const cube = new THREE.Mesh(geometry, materials)
-  // 关键逻辑实现
+  // 关键逻辑实现，缩放值−1在任何单轴上 都会镜像对象而不影响大小
   geometry.scale(1, 1, -1)
   scene.add(cube)
 
