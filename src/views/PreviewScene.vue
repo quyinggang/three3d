@@ -14,15 +14,7 @@ import { generateRandomColor } from '../util'
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 const schemeId = ref(1)
-
-const createModels = () => {
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
-  const box = new THREE.Mesh(
-    geometry,
-    new THREE.MeshBasicMaterial({ color: generateRandomColor() })
-  )
-  return box
-}
+let raf = null
 
 const createPreviewCanvas = () => {
   const dpr = window.devicePixelRatio
@@ -41,35 +33,28 @@ const createPreviewCanvas = () => {
   return previewCanvas
 }
 
-const createBasic = (width, height, canvasElement) => {
+const createBasic = (width, height) => {
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
   camera.position.set(1, 1, 6)
   camera.lookAt(scene.position)
 
   // 创建模型
-  const box = createModels()
+  const geometry = new THREE.BoxGeometry(1, 1, 1)
+  const box = new THREE.Mesh(
+    geometry,
+    new THREE.MeshBasicMaterial({ color: generateRandomColor() })
+  )
   scene.add(box)
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
-  return { renderer, scene, camera }
+  return { scene, camera }
 }
 
 /**
  * 方案一：将渲染的canvas内容输出图片，放置在另一个canvas中
- * 缺点：
- * - 每一帧都要请求加载图片，延迟比较大
- * - 需要手动调整preview显示比例逻辑，否则会出现变形
  */
-const applyCanvasScheme = (width, height, canvasElement, previewCanvas) => {
-  const { scene, camera, renderer } = createBasic(width, height, canvasElement)
+const applyCanvasScheme = (width, height, renderer, previewCanvas) => {
+  const { scene, camera } = createBasic(width, height)
 
   // 渲染图片到preview中
   const context = previewCanvas.getContext('2d')
@@ -87,10 +72,11 @@ const applyCanvasScheme = (width, height, canvasElement, previewCanvas) => {
   const domElement = renderer.domElement
   const controls = new OrbitControls(camera, domElement)
   const render = () => {
+    controls.update()
     renderer.render(scene, camera)
     renderPreviewImage()
+    raf = window.requestAnimationFrame(render)
   }
-  controls.addEventListener('change', () => render())
   render()
 }
 
@@ -100,8 +86,8 @@ const applyCanvasScheme = (width, height, canvasElement, previewCanvas) => {
  * - 借助RenderTarget，整个场景需要渲染两次
  * - 读取RenderTarget像素到视口，整个过程相对繁琐
  */
-const applyRenderTargetScheme = (width, height, canvasElement, previewCanvas) => {
-  const { scene, renderer, camera } = createBasic(width, height, canvasElement)
+const applyRenderTargetScheme = (width, height, renderer, previewCanvas) => {
+  const { scene, camera } = createBasic(width, height)
 
   // 创建RenderTarget
   const dpr = window.devicePixelRatio
@@ -138,14 +124,15 @@ const applyRenderTargetScheme = (width, height, canvasElement, previewCanvas) =>
 
   const controls = new OrbitControls(camera, renderer.domElement)
   const render = () => {
+    controls.update()
     renderer.setRenderTarget(renderTarget)
     renderer.render(scene, camera)
     renderPreview()
 
     renderer.setRenderTarget(null)
     renderer.render(scene, camera)
+    raf = window.requestAnimationFrame(render)
   }
-  controls.addEventListener('change', () => render())
   render()
 }
 
@@ -154,8 +141,8 @@ const applyRenderTargetScheme = (width, height, canvasElement, previewCanvas) =>
  * 该方案有很多逻辑点需要深入学习
  * - copyFramebufferToTexture中position是二维坐标，具体取值逻辑
  */
-const applyFrameBufferTextureDataScheme = (width, height, canvasElement) => {
-  const { scene, camera, renderer } = createBasic(width, height, canvasElement)
+const applyFrameBufferTextureDataScheme = (width, height, renderer) => {
+  const { scene, camera } = createBasic(width, height)
   camera.position.z = 20
 
   // 使用正交相机渲染预览图
@@ -200,6 +187,7 @@ const applyFrameBufferTextureDataScheme = (width, height, canvasElement) => {
   const controls = new OrbitControls(camera, renderer.domElement)
   renderer.autoClear = false
   const render = () => {
+    controls.update()
     renderer.clear()
     // 每次render都会自动清空帧缓冲数据，重新写入新的数据，所以根据实现效果需要合理的关闭自动清除
     renderer.render(scene, camera)
@@ -208,16 +196,16 @@ const applyFrameBufferTextureDataScheme = (width, height, canvasElement) => {
 
     renderer.clearDepth()
     renderer.render(previewScene, previewCamera)
+    raf = window.requestAnimationFrame(render)
   }
-  controls.addEventListener('change', () => render())
   render()
 }
 
 /**
  * 方案四：利用sicssor和viewport实现，同一个场景不同的相机处理
  */
-const applyViewportScheme = (width, height, canvasElement) => {
-  const { scene, camera, renderer } = createBasic(width, height, canvasElement)
+const applyViewportScheme = (width, height, renderer) => {
+  const { scene, camera } = createBasic(width, height)
 
   // 预览图场景和相机
   const dpr = window.devicePixelRatio
@@ -241,6 +229,7 @@ const applyViewportScheme = (width, height, canvasElement) => {
 
   const controls = new OrbitControls(camera, renderer.domElement)
   const render = () => {
+    controls.update()
     renderer.setScissorTest(true)
     scene.background = new THREE.Color('#000')
     renderer.setScissor(viewport.x, viewport.y, viewport.width, viewport.height)
@@ -271,16 +260,16 @@ const applyViewportScheme = (width, height, canvasElement) => {
     previewCamera.quaternion.copy(camera.quaternion)
     renderer.render(scene, previewCamera)
     renderer.setScissorTest(false)
+    raf = window.requestAnimationFrame(render)
   }
-  controls.addEventListener('change', () => render())
   render()
 }
 
 /**
  * 方案五：双渲染器+双canvas实现
  */
-const applyMultipleRenderScheme = (width, height, canvasElement, previewCanvasElement) => {
-  const { scene, camera, renderer } = createBasic(width, height, canvasElement)
+const applyMultipleRenderScheme = (width, height, renderer, previewCanvasElement) => {
+  const { scene, camera } = createBasic(width, height)
 
   // 预览图可以采用正交相机来渲染
   const previewWidth = previewCanvasElement.clientWidth
@@ -294,10 +283,11 @@ const applyMultipleRenderScheme = (width, height, canvasElement, previewCanvasEl
 
   const controls = new OrbitControls(camera, renderer.domElement)
   const render = () => {
-    renderer.render(scene, camera)
+    controls.update()
     previewRenderer.render(scene, camera)
+    renderer.render(scene, camera)
+    raf = window.requestAnimationFrame(render)
   }
-  controls.addEventListener('change', () => render())
   render()
 }
 
@@ -306,26 +296,26 @@ const handleSchemeSwitch = () => {
 }
 
 const schemeMap = {
-  1: (width, height, canvasElement, containerElement) => {
+  1: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
-    applyCanvasScheme(width, height, canvasElement, previewCanvas)
+    applyCanvasScheme(width, height, renderer, previewCanvas)
   },
-  2: (width, height, canvasElement, containerElement) => {
+  2: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
-    applyRenderTargetScheme(width, height, canvasElement, previewCanvas)
+    applyRenderTargetScheme(width, height, renderer, previewCanvas)
   },
-  3: (width, height, canvasElement) => {
-    applyFrameBufferTextureDataScheme(width, height, canvasElement)
+  3: (width, height, renderer) => {
+    applyFrameBufferTextureDataScheme(width, height, renderer)
   },
-  4: (width, height, canvasElement) => {
-    applyViewportScheme(width, height, canvasElement)
+  4: (width, height, renderer) => {
+    applyViewportScheme(width, height, renderer)
   },
-  5: (width, height, canvasElement, containerElement) => {
+  5: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
-    applyMultipleRenderScheme(width, height, canvasElement, previewCanvas)
+    applyMultipleRenderScheme(width, height, renderer, previewCanvas)
   }
 }
 
@@ -335,13 +325,29 @@ onMounted(() => {
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+
+  const clearBeforeSwitchScheme = () => {
+    const preview = document.getElementById('preview')
+    preview && containerElement.removeChild(preview)
+    raf && window.cancelAnimationFrame(raf)
+    // 清除渲染器状态
+    renderer.autoClear = true
+    renderer.resetState()
+  }
+
   watch(
     schemeId,
     (value) => {
-      const preview = document.getElementById('preview')
-      preview && containerElement.removeChild(preview)
+      clearBeforeSwitchScheme()
       const handler = schemeMap[value]
-      handler && handler(width, height, canvasElement, containerElement)
+      handler && handler(width, height, renderer, containerElement)
     },
     {
       immediate: true

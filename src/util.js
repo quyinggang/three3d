@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import { MathUtils } from 'three'
 
 export const generateRandomColor = () => {
   const letters = '0123456789ABCDEF'
@@ -10,8 +10,8 @@ export const generateRandomColor = () => {
 }
 
 export const generateRandomXYZ = (spread) => {
-  const x = THREE.MathUtils.randFloatSpread(spread.x)
-  const y = THREE.MathUtils.randFloatSpread(spread.y)
-  const z = THREE.MathUtils.randFloatSpread(spread.z)
+  const x = MathUtils.randFloatSpread(spread.x)
+  const y = MathUtils.randFloatSpread(spread.y)
+  const z = MathUtils.randFloatSpread(spread.z)
   return [x, y, z]
 }
