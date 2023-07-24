@@ -1,8 +1,8 @@
 <script setup>
 /**
  * 主要学习：
- * - 裁剪测试Scissor Test
- * - viewport视口范围定义
+ * - CubeTextureLoader
+ * - TextureLoader
  */
 import { ref, onMounted, watch } from 'vue'
 import * as THREE from 'three'
@@ -27,6 +27,7 @@ const createCubeScheme = () => {
   const materials = images.map((url) => {
     // 资源的加载需要时间，最好的处理是等资源加载完成再渲染
     return new THREE.MeshBasicMaterial({
+      // loader支持异步方法，即loadAsync
       map: loader.load(url)
     })
   })
