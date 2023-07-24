@@ -43,6 +43,11 @@ const configList = [
     path: '/preview',
     title: '场景预览的N种方法',
     componentName: 'PreviewScene'
+  },
+  {
+    path: '/panorama',
+    title: '全景图',
+    componentName: 'PanoramaScene'
   }
 ]
 
