@@ -23,12 +23,12 @@ const createModels = () => {
 const createFigurativeLights = () => {
   const geometry = new THREE.SphereGeometry(0.5, 16, 8)
   const sphere1 = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: '#FFFF00' }))
-  const light1 = new THREE.SpotLight('#FFFF00', 1, 100)
+  const light1 = new THREE.PointLight('#FFFF00', 1, 100)
   // 具象化灯光，灯光继承自Object3D，可将Mesh作为灯光的子对象
   light1.add(sphere1)
 
   const sphere2 = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: '#FF0000' }))
-  const light2 = new THREE.SpotLight('#FF0000', 1, 100)
+  const light2 = new THREE.PointLight('#FF0000', 1, 100)
   light2.add(sphere2)
 
   return [light1, light2]
