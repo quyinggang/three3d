@@ -48,6 +48,11 @@ const configList = [
     path: '/panorama',
     title: '全景图',
     componentName: 'PanoramaScene'
+  },
+  {
+    path: '/keyboard',
+    title: '键盘控制物体移动',
+    componentName: 'KeyboardScene'
   }
 ]
 
