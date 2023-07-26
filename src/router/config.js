@@ -53,6 +53,11 @@ const configList = [
     path: '/keyboard',
     title: '键盘控制物体移动',
     componentName: 'KeyboardScene'
+  },
+  {
+    path: '/motion',
+    title: '曲线运动Flow方案',
+    componentName: 'CurveMotion'
   }
 ]
 

@@ -1,0 +1,147 @@
+<script setup>
+/**
+ * 主要学习：
+ * - TransformControls
+ * - 沿曲线运行的Flow方案
+ */
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { TransformControls } from 'three/addons/controls/TransformControls.js'
+import { Flow } from 'three/addons/modifiers/CurveModifier.js'
+
+const canvasElementRef = ref(null)
+const containerElementRef = ref(null)
+
+const createCurvePath = () => {
+  const group = new THREE.Group()
+  const initialPoints = [
+    { x: 1, y: 0, z: -1 },
+    { x: 1, y: 0, z: 1 },
+    { x: -1, y: 0, z: 1 },
+    { x: -1, y: 0, z: -1 }
+  ]
+  const boxGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1)
+  const boxMaterial = new THREE.MeshBasicMaterial()
+  for (const point of initialPoints) {
+    const box = new THREE.Mesh(boxGeometry, boxMaterial)
+    box.position.copy(point)
+    group.add(box)
+  }
+
+  // curve->点->LineLoop，这里需要注意是共用Mesh Position
+  const curve = new THREE.CatmullRomCurve3(
+    group.children.map((mesh) => mesh.position),
+    true
+  )
+  curve.curveType = 'centripetal'
+  const points = curve.getPoints(50)
+  const curveObject = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(points),
+    new THREE.LineBasicMaterial({ color: 0x00ff00 })
+  )
+  return [group, curveObject, curve]
+}
+
+const createFlowMotionTarget = () => {
+  // 圆柱体
+  const geometry = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 32, 32)
+  geometry.rotateX(Math.PI / 2)
+  geometry.rotateY(Math.PI / 2)
+  const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+  const cylinder = new THREE.Mesh(geometry, material)
+  return cylinder
+}
+
+onMounted(() => {
+  const canvasElement = canvasElementRef.value
+  const containerElement = containerElementRef.value
+  const width = containerElement.clientWidth
+  const height = containerElement.clientHeight
+
+  // 创建场景
+  const scene = new THREE.Scene()
+
+  // 曲线路径
+  const [group, curveObject, curve] = createCurvePath()
+  scene.add(group)
+  scene.add(curveObject)
+
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+  camera.position.set(2, 4, 3)
+  // 设置摄像机方向
+  camera.lookAt(scene.position)
+
+  // CurveModifier Flow用于处理物体绕曲线运动
+  const model = createFlowMotionTarget()
+  const flow = new Flow(model)
+  flow.updateCurve(0, curve)
+  scene.add(flow.object3D)
+
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+
+  // 选中绑定TransformControls拖拽点
+  const rayCaster = new THREE.Raycaster()
+  const pointer = new THREE.Vector2()
+  const handleClick = (event) => {
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+    rayCaster.setFromCamera(pointer, camera)
+    const intersects = rayCaster.intersectObjects(group.children)
+    if (intersects.length > 0) {
+      // 关联对应的拖拽点并且更改position，共用position变量是关键
+      transformControls.attach(intersects[0].object)
+    }
+  }
+  canvasElement.addEventListener('click', handleClick)
+
+  // TransformControls
+  const transformControls = new TransformControls(camera, renderer.domElement)
+  transformControls.addEventListener('dragging-changed', function (event) {
+    const isDragging = event.value
+    if (!isDragging) {
+      // 拖拽结束后获取最新的curve点集，从而更新曲线
+      const points = curve.getPoints(50)
+      curveObject.geometry.setFromPoints(points)
+      flow.updateCurve(0, curve)
+    }
+    controls.enabled = !isDragging
+  })
+  // TransformControls需要添加到场景，可以通过控制其visible来显示隐藏
+  scene.add(transformControls)
+
+  const controls = new OrbitControls(camera, renderer.domElement)
+  const render = () => {
+    controls.update()
+    // 运动速率
+    flow && flow.moveAlongCurve(0.002)
+    renderer.render(scene, camera)
+    window.requestAnimationFrame(render)
+  }
+  render()
+  onBeforeUnmount(() => {
+    canvasElement.removeEventListener('click', handleClick)
+  })
+})
+</script>
+
+<template>
+  <div ref="containerElementRef" class="container">
+    <canvas ref="canvasElementRef"></canvas>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+</style>
