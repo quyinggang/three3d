@@ -13,3 +13,5 @@
 - 全景图：主要学习CubeTexture、TextureLoader
 - 键盘控制物体移动：主要学习矩阵相关基本应用、镜头跟随
 - 曲线运动Flow方案：主要学习TransformControls、Flow扩展API的使用
+- 曲线运动下视角切换：主要学习第一人称视角实现、曲线的相关方法等
+

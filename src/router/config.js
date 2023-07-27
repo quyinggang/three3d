@@ -58,6 +58,11 @@ const configList = [
     path: '/motion',
     title: '曲线运动Flow方案',
     componentName: 'CurveMotion'
+  },
+  {
+    path: '/camera',
+    title: '视角切换',
+    componentName: 'CameraView'
   }
 ]
 
