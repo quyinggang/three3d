@@ -41,7 +41,7 @@ const configList = [
   },
   {
     path: '/preview',
-    title: '场景预览的N种方法',
+    title: '场景预览的N种实现方法',
     componentName: 'PreviewScene'
   },
   {
@@ -63,6 +63,11 @@ const configList = [
     path: '/camera',
     title: '视角切换',
     componentName: 'CameraView'
+  },
+  {
+    path: '/label',
+    title: '标签的N种实现方法',
+    componentName: 'LabelScene'
   }
 ]
 
