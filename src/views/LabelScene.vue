@@ -4,7 +4,7 @@
  * - CSS2DRenderer
  * - CSS3DRenderer
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js'
 import { CSS3DSprite, CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
@@ -111,19 +111,70 @@ const createCSS3DObjectLabel = () => {
   return labelObject
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(1, 1, 10)
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const createCSS2DRenderer = (width, height) => {
+  // CSS2D渲染器
+  const label2DRenderer = new CSS2DRenderer()
+  const domElement = label2DRenderer.domElement
+  label2DRenderer.setSize(width, height)
+  domElement.style.position = 'absolute'
+  domElement.style.top = '0px'
+  document.body.appendChild(domElement)
+  const effect = () => {
+    document.body.removeChild(domElement)
+  }
+  return [label2DRenderer, effect]
+}
+
+const createCSS3DRenderer = (width, height) => {
+  // CSS3D渲染器
+  const label3DRenderer = new CSS3DRenderer()
+  const domElement = label3DRenderer.domElement
+  label3DRenderer.setSize(width, height)
+  domElement.style.position = 'absolute'
+  domElement.style.top = '0px'
+  document.body.appendChild(domElement)
+  const effect = () => {
+    document.body.removeChild(domElement)
+  }
+  return [label3DRenderer, effect]
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
-  // 创建场景
-  const scene = new THREE.Scene()
-
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
-  camera.position.set(1, 1, 10)
-  camera.lookAt(scene.position)
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const [label2DRenderer, remove2DRendererElement] = createCSS2DRenderer(width, height)
+  const [label3DRenderer, remove3DRendererElement] = createCSS3DRenderer(width, height)
 
   // 创建模型
   const [box1, box2, box3, box4] = createModels()
@@ -153,28 +204,6 @@ onMounted(() => {
   label3DObject.scale.set(0.018, 0.018, 0.018)
   box4.add(label3DObject)
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
-  // CSS2D渲染器
-  const label2DRenderer = new CSS2DRenderer()
-  label2DRenderer.setSize(width, height)
-  label2DRenderer.domElement.style.position = 'absolute'
-  label2DRenderer.domElement.style.top = '0px'
-  document.body.appendChild(label2DRenderer.domElement)
-
-  // CSS3D渲染器
-  const label3DRenderer = new CSS3DRenderer()
-  label3DRenderer.setSize(width, height)
-  label3DRenderer.domElement.style.position = 'absolute'
-  label3DRenderer.domElement.style.top = '0px'
-  document.body.appendChild(label3DRenderer.domElement)
-
   // CSS2D/CSS3D方式新建的标签层覆盖在canvas层之上，需改变响应目标元素
   const controls = new OrbitControls(camera, label3DRenderer.domElement)
   const render = () => {
@@ -186,6 +215,11 @@ onMounted(() => {
   }
 
   render()
+
+  onBeforeUnmount(() => {
+    remove2DRendererElement()
+    remove3DRendererElement()
+  })
 })
 </script>
 

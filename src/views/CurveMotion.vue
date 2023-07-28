@@ -53,32 +53,22 @@ const createFlowMotionTarget = () => {
   return cylinder
 }
 
-onMounted(() => {
-  const canvasElement = canvasElementRef.value
-  const containerElement = containerElementRef.value
-  const width = containerElement.clientWidth
-  const height = containerElement.clientHeight
-
+const createScene = () => {
   // 创建场景
   const scene = new THREE.Scene()
+  return scene
+}
 
-  // 曲线路径
-  const [group, curveObject, curve] = createCurvePath()
-  scene.add(group)
-  scene.add(curveObject)
-
+const createCamera = (aspect) => {
   // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+  const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000)
   camera.position.set(2, 4, 3)
   // 设置摄像机方向
-  camera.lookAt(scene.position)
+  camera.lookAt(0, 0, 0)
+  return camera
+}
 
-  // CurveModifier Flow用于处理物体绕曲线运动
-  const model = createFlowMotionTarget()
-  const flow = new Flow(model)
-  flow.updateCurve(0, curve)
-  scene.add(flow.object3D)
-
+const createWebGLRenderer = (canvasElement, width, height) => {
   // 渲染器
   const renderer = new THREE.WebGLRenderer({
     canvas: canvasElement,
@@ -86,7 +76,10 @@ onMounted(() => {
   })
   renderer.setSize(width, height)
   renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
 
+const applyRayCaster = (camera, objects, callback) => {
   // 选中绑定TransformControls拖拽点
   const rayCaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2()
@@ -94,13 +87,35 @@ onMounted(() => {
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
     rayCaster.setFromCamera(pointer, camera)
-    const intersects = rayCaster.intersectObjects(group.children)
+    const intersects = rayCaster.intersectObjects(objects)
     if (intersects.length > 0) {
-      // 关联对应的拖拽点并且更改position，共用position变量是关键
-      transformControls.attach(intersects[0].object)
+      callback && callback(intersects[0].object)
     }
   }
-  canvasElement.addEventListener('click', handleClick)
+  document.addEventListener('click', handleClick)
+  return () => document.removeEventListener('click', handleClick)
+}
+
+onMounted(() => {
+  const canvasElement = canvasElementRef.value
+  const containerElement = containerElementRef.value
+  const width = containerElement.clientWidth
+  const height = containerElement.clientHeight
+
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+
+  // 曲线路径
+  const [group, curveObject, curve] = createCurvePath()
+  scene.add(group)
+  scene.add(curveObject)
+
+  // CurveModifier Flow用于处理物体绕曲线运动
+  const model = createFlowMotionTarget()
+  const flow = new Flow(model)
+  flow.updateCurve(0, curve)
+  scene.add(flow.object3D)
 
   // TransformControls
   const transformControls = new TransformControls(camera, renderer.domElement)
@@ -117,6 +132,11 @@ onMounted(() => {
   // TransformControls需要添加到场景，可以通过控制其visible来显示隐藏
   scene.add(transformControls)
 
+  const removeClickEvent = applyRayCaster(camera, group.children, (selectedObject) => {
+    // 关联对应的拖拽点并且更改position，共用position变量是关键
+    transformControls.attach(selectedObject)
+  })
+
   const controls = new OrbitControls(camera, renderer.domElement)
   const render = () => {
     controls.update()
@@ -127,7 +147,7 @@ onMounted(() => {
   }
   render()
   onBeforeUnmount(() => {
-    canvasElement.removeEventListener('click', handleClick)
+    removeClickEvent()
   })
 })
 </script>

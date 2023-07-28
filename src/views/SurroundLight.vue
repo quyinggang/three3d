@@ -34,20 +34,44 @@ const createFigurativeLights = () => {
   return [light1, light2]
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(0, 0, 120)
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  // 开启阴影渲染
+  renderer.shadowMap.enabled = true
+
+  return renderer
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
-  // 创建场景
-  const scene = new THREE.Scene()
-
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
-  camera.position.set(0, 0, 120)
-  // 设置摄像机方向
-  camera.lookAt(scene.position)
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
 
   // 地板
   const geometry = new THREE.PlaneGeometry(100, 100, 20)
@@ -68,18 +92,9 @@ onMounted(() => {
   scene.add(light1)
   scene.add(light2)
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
   const speed = 30
   const clock = new THREE.Clock()
   const controls = new OrbitControls(camera, renderer.domElement)
-
   const render = () => {
     // 绕物体圆周运行
     const elapsedTime = clock.getElapsedTime()

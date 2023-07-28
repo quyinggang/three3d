@@ -94,16 +94,69 @@ const createLight = () => {
   return group
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  // 雾化效果，增加夜晚漆黑模糊效果
+  scene.fog = new THREE.Fog('#262837', 1, 30)
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(3, 2, 20)
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const createControls = (camera, domElement) => {
+  const controls = new OrbitControls(camera, domElement)
+  controls.enablePan = false
+  // 缩放距离（PerspectiveCamera的设置）
+  controls.minDistance = 10
+  // 设置垂直方面角度范围，避免看到地面底部
+  controls.minPolarAngle = Math.PI / 4
+  controls.maxPolarAngle = (Math.PI / 2) * 0.96
+  return controls
+}
+
+const createStats = () => {
+  const stats = new Stats()
+  stats.domElement.style.position = 'absolute'
+  stats.domElement.style.left = '0px'
+  stats.domElement.style.top = '0px'
+
+  document.body.appendChild(stats.domElement)
+  const effect = () => {
+    document.body.removeChild(stats.domElement)
+  }
+  return [stats, effect]
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
-  // 创建场景
-  const scene = new THREE.Scene()
-  // 雾化效果，增加夜晚漆黑模糊效果
-  scene.fog = new THREE.Fog('#262837', 1, 30)
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const controls = createControls(camera, renderer.domElement)
+  const [stats, removeStatsNode] = createStats()
 
   // 地面
   const ground = createGround()
@@ -116,35 +169,6 @@ onMounted(() => {
   // 灯光
   const light = createLight()
   scene.add(light)
-
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
-  camera.position.set(3, 2, 20)
-  // 设置摄像机方向
-  camera.lookAt(scene.position)
-
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
-  const controls = new OrbitControls(camera, renderer.domElement)
-  controls.enablePan = false
-  // 缩放距离（PerspectiveCamera的设置）
-  controls.minDistance = 10
-  // 设置垂直方面角度范围，避免看到地面底部
-  controls.minPolarAngle = Math.PI / 4
-  controls.maxPolarAngle = (Math.PI / 2) * 0.96
-
-  const stats = new Stats()
-  stats.domElement.style.position = 'absolute'
-  stats.domElement.style.left = '0px'
-  stats.domElement.style.top = '0px'
-
-  document.body.appendChild(stats.domElement)
 
   const render = () => {
     let isNeedUpdateSpeedData = false
@@ -187,7 +211,7 @@ onMounted(() => {
   render()
 
   onBeforeUnmount(() => {
-    document.body.removeChild(stats.domElement)
+    removeStatsNode()
   })
 })
 </script>

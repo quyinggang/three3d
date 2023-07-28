@@ -52,6 +52,33 @@ const handleSchemeSwitch = () => {
   schemeIdRef.value = 1 - schemeIdRef.value
 }
 
+const createCamera = (aspect) => {
+  // 摄像机需要再立方体内部
+  const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000)
+  camera.position.z = 0.1
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const createControls = (camera, domElement) => {
+  const controls = new OrbitControls(camera, domElement)
+  controls.enablePan = false
+  controls.enableZoom = false
+  return controls
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -59,6 +86,9 @@ onMounted(() => {
   const height = containerElement.clientHeight
 
   let scene = null
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const controls = createControls(camera, renderer.domElement)
 
   watch(
     schemeIdRef,
@@ -68,23 +98,6 @@ onMounted(() => {
     { immediate: true }
   )
 
-  // 摄像机需要再立方体内部
-  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
-  camera.position.z = 0.1
-  // 设置摄像机方向
-  camera.lookAt(scene.position)
-
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
-  const controls = new OrbitControls(camera, renderer.domElement)
-  controls.enablePan = false
-  controls.enableZoom = false
   const render = () => {
     controls.update()
     renderer.render(scene, camera)

@@ -30,6 +30,35 @@ const createModels = () => {
   return [box1, box2]
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(1, 1, 6)
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  // 开启裁剪测试
+  renderer.setScissorTest(true)
+
+  return renderer
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -50,33 +79,15 @@ onMounted(() => {
     height: height
   }
 
-  // 创建场景
-  const scene = new THREE.Scene()
-
-  // 透视投影摄像机
-  const leftCamera = new THREE.PerspectiveCamera(45, leftSize.width / leftSize.height, 1, 1000)
-  leftCamera.position.set(1, 1, 6)
-  // 设置摄像机方向
-  leftCamera.lookAt(scene.position)
-
-  const rightCamera = new THREE.PerspectiveCamera(45, rightSize.width / rightSize.height, 1, 1000)
-  rightCamera.position.set(1, 1, 6)
-  rightCamera.lookAt(scene.position)
+  const scene = createScene()
+  const leftCamera = createCamera(leftSize.width / leftSize.height)
+  const rightCamera = createCamera(rightSize.width / rightSize.height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
 
   // 创建模型
   const [box1, box2] = createModels()
   scene.add(box1)
   scene.add(box2)
-
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-  // 开启裁剪测试
-  renderer.setScissorTest(true)
 
   // 由于左右两边区域使用同一个DOM，故而鼠标操作同步，如果想要区域鼠标操作独立需要使用不同的DOM
   const domElement = renderer.domElement

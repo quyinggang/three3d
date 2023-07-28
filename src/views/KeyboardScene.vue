@@ -26,36 +26,74 @@ const createModels = () => {
   return box
 }
 
-onMounted(() => {
-  const canvasElement = canvasElementRef.value
-  const containerElement = containerElementRef.value
-  const width = containerElement.clientWidth
-  const height = containerElement.clientHeight
-  const initialCameraPos = new THREE.Vector3(0, 4, 10)
-  let currentKeycode = null
-
+const createScene = () => {
   const scene = new THREE.Scene()
   scene.fog = new THREE.Fog('#262837', 1, 20)
+  return scene
+}
 
-  // 创建模型
-  const box = createModels()
-  box.position.set(0.5, 0.5, 0.5)
-  scene.add(box)
-
-  // 网格辅助线
-  const gridHelper = new THREE.GridHelper(100, 100)
-  scene.add(gridHelper)
-
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
+const createCamera = (aspect, initialCameraPos, lookAt) => {
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
   camera.position.copy(initialCameraPos)
-  camera.lookAt(box.position)
+  camera.lookAt(lookAt)
+  return camera
+}
 
+const createWebGLRenderer = (canvasElement, width, height) => {
   const renderer = new THREE.WebGLRenderer({
     canvas: canvasElement,
     antialias: true
   })
   renderer.setSize(width, height)
   renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const registerKeyboardEvent = (onKeydown, onKeyup) => {
+  const handleKeydown = (event) => {
+    onKeydown && onKeydown(event)
+  }
+  const handleKeyup = () => {
+    onKeyup && onKeyup()
+  }
+
+  document.addEventListener('keydown', handleKeydown, false)
+  document.addEventListener('keyup', handleKeyup, false)
+  return () => {
+    document.removeEventListener('keydown', handleKeydown)
+    document.removeEventListener('keyup', handleKeyup)
+  }
+}
+
+onMounted(() => {
+  const canvasElement = canvasElementRef.value
+  const containerElement = containerElementRef.value
+  const width = containerElement.clientWidth
+  const height = containerElement.clientHeight
+  const initialCameraPos = new THREE.Vector3(0, 4, 10)
+  const boxPosition = new THREE.Vector3(0, 0.5, 0)
+  let currentKeycode = null
+
+  const scene = createScene()
+  const camera = createCamera(width / height, initialCameraPos, boxPosition)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const removeKeyboardEvent = registerKeyboardEvent(
+    (event) => {
+      currentKeycode = event.keyCode
+    },
+    () => {
+      currentKeycode = null
+    }
+  )
+
+  // 创建模型
+  const box = createModels()
+  box.position.copy(boxPosition)
+  scene.add(box)
+
+  // 网格辅助线
+  const gridHelper = new THREE.GridHelper(100, 100)
+  scene.add(gridHelper)
 
   const clock = new THREE.Clock()
   const updateBoxAndCamera = (delta) => {
@@ -105,18 +143,10 @@ onMounted(() => {
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
   }
-  const handleKeydown = (event) => {
-    currentKeycode = event.keyCode
-  }
-  const handleKeyup = () => {
-    currentKeycode = null
-  }
   render()
-  document.addEventListener('keydown', handleKeydown, false)
-  document.addEventListener('keyup', handleKeyup, false)
+
   onBeforeUnmount(() => {
-    document.removeEventListener('keydown', handleKeydown)
-    document.removeEventListener('keyup', handleKeyup)
+    removeKeyboardEvent()
   })
 })
 </script>

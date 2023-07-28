@@ -50,6 +50,29 @@ const createMotionModel = () => {
   return cone
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
 const handleViewSwitch = () => {
   cameraViewRef.value = 1 - cameraViewRef.value
 }
@@ -60,8 +83,13 @@ onMounted(() => {
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
-  // 创建场景
-  const scene = new THREE.Scene()
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+
+  // 相机辅助
+  const helper = new THREE.CameraHelper(camera)
+  scene.add(helper)
 
   // 曲线路径
   const [group, curveObject, curve] = createCurvePath()
@@ -71,19 +99,6 @@ onMounted(() => {
   // 运动物体
   const cylinder = createMotionModel()
   scene.add(cylinder)
-
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
-  const helper = new THREE.CameraHelper(camera)
-  scene.add(helper)
-
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
 
   let progress = 0
   const velocity = 0.0015

@@ -29,6 +29,39 @@ const createModels = (renderTarget) => {
   return [greenBox, box]
 }
 
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  scene.background = new THREE.Color(0xbfe3dd)
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(1, 1, 3)
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const createControls = (camera, domElement) => {
+  const controls = new OrbitControls(camera, domElement)
+  controls.enableZoom = false
+  return controls
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -36,15 +69,10 @@ onMounted(() => {
   const height = containerElement.clientHeight
   const dpr = window.devicePixelRatio
 
-  // 创建场景
-  const scene = new THREE.Scene()
-  scene.background = new THREE.Color(0xbfe3dd)
-
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
-  camera.position.set(1, 1, 3)
-  // 设置摄像机方向
-  camera.lookAt(scene.position)
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const controls = createControls(camera, renderer.domElement)
 
   const renderTarget = new THREE.WebGLRenderTarget(width * dpr, height * dpr)
 
@@ -54,19 +82,7 @@ onMounted(() => {
   scene.add(greenBoxModel)
   scene.add(boxModel)
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(dpr)
-
-  const controls = new OrbitControls(camera, renderer.domElement)
-  controls.enableZoom = false
-
   const clock = new THREE.Clock()
-
   const render = () => {
     const elapsedTime = clock.getElapsedTime()
 

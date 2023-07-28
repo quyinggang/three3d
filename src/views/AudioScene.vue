@@ -59,25 +59,58 @@ const createModels = () => {
   return group
 }
 
-onMounted(() => {
-  const canvasElement = canvasElementRef.value
-  const containerElement = containerElementRef.value
-  const width = containerElement.clientWidth
-  const height = containerElement.clientHeight
-
+const createScene = () => {
   // 创建场景
   const scene = new THREE.Scene()
+  return scene
+}
 
+const createCamera = (aspect) => {
   // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
   camera.position.set(16, 11, 12)
   // 设置摄像机方向
-  camera.lookAt(scene.position)
+  camera.lookAt(0, 0, 0)
+  return camera
+}
 
-  // 创建模型
-  const group = createModels()
-  scene.add(group)
+const createWebGLRenderer = (canvasElement, width, height) => {
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
 
+const createControls = (camera, domElement) => {
+  const controls = new OrbitControls(camera, domElement)
+  controls.minDistance = 8
+  controls.maxDistance = 40
+  return controls
+}
+
+const applyRayCaster = (objects, camera, callback) => {
+  // 射线拾取，点击任意模型实现音乐播放与暂停
+  const rayCaster = new THREE.Raycaster()
+  const pointer = new THREE.Vector2()
+  const handleClick = (event) => {
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+    rayCaster.setFromCamera(pointer, camera)
+    // 计算物体和射线的焦点
+    const intersects = rayCaster.intersectObjects(objects)
+    if (intersects.length > 0) {
+      callback && callback()
+    }
+  }
+  document.addEventListener('click', handleClick)
+  return () => document.removeEventListener('click', handleClick)
+}
+
+const loadAssets = (onLoaded) => {
   // 加载音频文件
   let audio = null
   let audioAnalyser = null
@@ -95,33 +128,52 @@ onMounted(() => {
 
       // 获取音频数据
       audioAnalyser = new THREE.AudioAnalyser(audio, size)
-      camera.add(listener)
+
+      onLoaded && onLoaded(audio, listener, audioAnalyser)
     },
     () => {},
     (err) => {
       console.log(err)
     }
   )
+  return () => {
+    if (audio && audio.isPlaying) {
+      audio.stop()
+    }
+  }
+}
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
+onMounted(() => {
+  const canvasElement = canvasElementRef.value
+  const containerElement = containerElementRef.value
+  const width = containerElement.clientWidth
+  const height = containerElement.clientHeight
+  let audioInstance, audioAnalyserInstance
 
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
   const composer = createEffectComposer(scene, camera, renderer)
+  const controls = createControls(camera, renderer.domElement)
+  const stopAudioPlay = loadAssets((audio, listener, audioAnalyser) => {
+    audioInstance = audio
+    audioAnalyserInstance = audioAnalyser
+    camera.add(listener)
+  })
+  const removeClickEvent = applyRayCaster(scene.children, camera, () => {
+    if (!audioInstance) return
+    audioInstance.isPlaying ? audioInstance.pause() : audioInstance.play()
+  })
 
-  const controls = new OrbitControls(camera, renderer.domElement)
-  controls.minDistance = 8
-  controls.maxDistance = 40
+  // 创建模型
+  const group = createModels()
+  scene.add(group)
 
   const render = () => {
     controls.update()
     composer.render()
-    if (audio && audio.isPlaying && audioAnalyser) {
-      const data = audioAnalyser.getFrequencyData()
+    if (audioInstance && audioInstance.isPlaying && audioAnalyserInstance) {
+      const data = audioAnalyserInstance.getFrequencyData()
       group.children.forEach((mesh, index) => {
         const value = data[index] / 45
         mesh.scale.y = value
@@ -129,33 +181,11 @@ onMounted(() => {
     }
     window.requestAnimationFrame(render)
   }
-
-  // 射线拾取，点击任意模型实现音乐播放与暂停
-  const raycaster = new THREE.Raycaster()
-  const pointer = new THREE.Vector2()
-  const handleClick = (event) => {
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-    raycaster.setFromCamera(pointer, camera)
-    // 计算物体和射线的焦点
-    const intersects = raycaster.intersectObjects(scene.children)
-    if (intersects.length > 0) {
-      if (!audio) return
-      if (audio.isPlaying) {
-        audio.pause()
-      } else {
-        audio.play()
-        render()
-      }
-    }
-  }
   render()
-  document.addEventListener('click', handleClick)
+
   onBeforeUnmount(() => {
-    if (audio && audio.isPlaying) {
-      audio.stop()
-    }
+    stopAudioPlay()
+    removeClickEvent()
   })
 })
 </script>
