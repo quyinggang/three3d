@@ -70,6 +70,11 @@ const configList = [
     componentName: 'LabelScene'
   },
   {
+    path: '/points',
+    title: '粒子形状变换',
+    componentName: 'PointsTransform'
+  },
+  {
     path: '/dot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'
