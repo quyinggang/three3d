@@ -15,3 +15,4 @@
 - 曲线运动Flow方案：主要学习TransformControls、Flow扩展API的使用
 - 曲线运动下视角切换：主要学习第一人称视角实现、曲线的相关方法等
 - 标签的N种实现方法：主要学习3D场景结合2D元素
+- shader之圆点粒子：主要学习ShaderMaterial、shader基础用法

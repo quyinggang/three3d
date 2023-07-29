@@ -68,6 +68,11 @@ const configList = [
     path: '/label',
     title: '标签的N种实现方法',
     componentName: 'LabelScene'
+  },
+  {
+    path: '/dot',
+    title: 'shader之圆点粒子',
+    componentName: 'DotShader'
   }
 ]
 
