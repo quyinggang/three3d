@@ -10,6 +10,11 @@ const configList = [
     componentName: 'RoomScene'
   },
   {
+    path: '/earth',
+    title: '地球天体',
+    componentName: 'EarthScene'
+  },
+  {
     path: '/fly',
     title: '飞舞的光点',
     componentName: 'FlyScene'
