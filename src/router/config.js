@@ -75,6 +75,11 @@ const configList = [
     componentName: 'PointsTransform'
   },
   {
+    path: '/map',
+    title: '中国地图',
+    componentName: 'MapScene'
+  },
+  {
     path: '/dot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'

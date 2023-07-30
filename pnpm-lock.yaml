@@ -8,6 +8,9 @@ dependencies:
   '@tweenjs/tween.js':
     specifier: ^21.0.0
     version: registry.npmmirror.com/@tweenjs/tween.js@21.0.0
+  d3-geo:
+    specifier: ^3.1.0
+    version: registry.npmmirror.com/d3-geo@3.1.0
   three:
     specifier: ^0.154.0
     version: registry.npmmirror.com/three@0.154.0
@@ -830,6 +833,24 @@ packages:
     name: csstype
     version: 3.1.2
 
+  registry.npmmirror.com/d3-array@3.2.4:
+    resolution: {integrity: sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/d3-array/-/d3-array-3.2.4.tgz}
+    name: d3-array
+    version: 3.2.4
+    engines: {node: '>=12'}
+    dependencies:
+      internmap: registry.npmmirror.com/internmap@2.0.3
+    dev: false
+
+  registry.npmmirror.com/d3-geo@3.1.0:
+    resolution: {integrity: sha512-JEo5HxXDdDYXCaWdwLRt79y7giK8SbhZJbFWXqbRTolCHFI5jRqteLzCsq51NKbUoX0PjBVSohxrx+NoOUujYA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/d3-geo/-/d3-geo-3.1.0.tgz}
+    name: d3-geo
+    version: 3.1.0
+    engines: {node: '>=12'}
+    dependencies:
+      d3-array: registry.npmmirror.com/d3-array@3.2.4
+    dev: false
+
   registry.npmmirror.com/debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/debug/-/debug-4.3.4.tgz}
     name: debug
@@ -1316,6 +1337,13 @@ packages:
     name: inherits
     version: 2.0.4
     dev: true
+
+  registry.npmmirror.com/internmap@2.0.3:
+    resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/internmap/-/internmap-2.0.3.tgz}
+    name: internmap
+    version: 2.0.3
+    engines: {node: '>=12'}
+    dev: false
 
   registry.npmmirror.com/is-ci@1.2.1:
     resolution: {integrity: sha512-s6tfsaQaQi3JNciBH6shVqEDvhGut0SUXr31ag8Pd8BBbVVlcGfWhpPmEOoM6RJ5TFhbypvf5yyRw/VXW1IiWg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/is-ci/-/is-ci-1.2.1.tgz}
