@@ -15,3 +15,14 @@ export const generateRandomXYZ = (spread) => {
   const z = MathUtils.randFloatSpread(spread.z)
   return [x, y, z]
 }
+
+// 三维坐标转屏幕坐标
+export const transform3DTo2D = (camera, worldVector) => {
+  const vector = worldVector.project(camera)
+  const halfWidth = window.innerWidth / 2
+  const halfHeight = window.innerHeight / 2
+  return {
+    x: Math.round(vector.x * halfWidth + halfWidth),
+    y: Math.round(-vector.y * halfHeight + halfHeight)
+  }
+}

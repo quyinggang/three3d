@@ -8,6 +8,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as d3 from 'd3-geo'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { transform3DTo2D } from '../util'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -107,16 +108,6 @@ const applyRayCaster = (camera, objects, moveCallback) => {
   document.addEventListener('pointermove', handlePointerMove)
   return () => {
     document.removeEventListener('pointermove', handlePointerMove)
-  }
-}
-
-const transform3DTo2D = (camera, worldVector) => {
-  const vector = worldVector.project(camera)
-  const halfWidth = window.innerWidth / 2
-  const halfHeight = window.innerHeight / 2
-  return {
-    x: Math.round(vector.x * halfWidth + halfWidth),
-    y: Math.round(-vector.y * halfHeight + halfHeight)
   }
 }
 
