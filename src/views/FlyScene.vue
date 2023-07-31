@@ -62,11 +62,12 @@ const createFirefly = () => {
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
   geometry.setAttribute('customData', new THREE.Float32BufferAttribute(speedList, 3))
-  // 注意alphaTest属性的用途
+  // 关闭depth处理可以避免贴图遮挡后面物体
   const material = new THREE.PointsMaterial({
     transparent: true,
     map: canvasTexture,
-    alphaTest: 0.5
+    depthTest: false,
+    depthWrite: false
   })
   return new THREE.Points(geometry, material)
 }

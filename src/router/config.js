@@ -95,6 +95,11 @@ const configList = [
     componentName: 'CityScene'
   },
   {
+    path: '/particle',
+    title: '粒子引擎实现常见效果',
+    componentName: 'ParticleScene'
+  },
+  {
     path: '/dot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'
