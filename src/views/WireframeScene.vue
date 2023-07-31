@@ -49,7 +49,7 @@ const createModels = () => {
       color: '#2685fe'
     })
   )
-  box1.position.set(-2, 0, 0)
+  box1.position.set(-3, 0, 0)
 
   const box2 = new THREE.Mesh(
     geometry,
@@ -57,7 +57,7 @@ const createModels = () => {
       color: '#9400D3'
     })
   )
-  box2.position.set(0, 0, 0)
+  box2.position.set(-1, 0, 0)
 
   const box3 = new THREE.Mesh(
     geometry,
@@ -65,9 +65,17 @@ const createModels = () => {
       color: '#FF0000'
     })
   )
-  box3.position.set(2, 0, 0)
+  box3.position.set(1, 0, 0)
 
-  return [box1, box2, box3]
+  const box4 = new THREE.Mesh(
+    geometry,
+    new THREE.MeshBasicMaterial({
+      color: '#FFA500'
+    })
+  )
+  box4.position.set(3, 0, 0)
+
+  return [box1, box2, box3, box4]
 }
 
 /**
@@ -102,6 +110,20 @@ const applyEdgeScheme = (model) => {
   return line
 }
 
+/**
+ * 方案四：WireframeGeometry + LineSegments
+ */
+const applyWireframeGeometryScheme = (model) => {
+  const line = new THREE.LineSegments(
+    new THREE.WireframeGeometry(model.geometry),
+    new THREE.LineBasicMaterial({
+      color: model.material.color
+    })
+  )
+  line.position.copy(model.position)
+  return line
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -113,7 +135,7 @@ onMounted(() => {
   const renderer = createWebGLRenderer(canvasElement, width, height)
   const controls = createControls(camera, renderer.domElement)
 
-  const [box1, box2, box3] = createModels()
+  const [box1, box2, box3, box4] = createModels()
   applyWireframeScheme(box1)
   scene.add(box1)
 
@@ -122,6 +144,9 @@ onMounted(() => {
 
   const edgeLine = applyEdgeScheme(box3)
   scene.add(edgeLine)
+
+  const wireLine = applyWireframeGeometryScheme(box4)
+  scene.add(wireLine)
 
   const render = () => {
     controls.update()
