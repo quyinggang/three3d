@@ -85,6 +85,16 @@ const configList = [
     componentName: 'MapScene'
   },
   {
+    path: '/wireframe',
+    title: '线框化的N种实现方式',
+    componentName: 'WireframeScene'
+  },
+  {
+    path: '/city',
+    title: '城市建筑模型加载',
+    componentName: 'CityScene'
+  },
+  {
     path: '/dot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'
