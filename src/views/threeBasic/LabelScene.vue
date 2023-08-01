@@ -9,7 +9,7 @@ import * as THREE from 'three'
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js'
 import { CSS3DSprite, CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { generateRandomColor } from '@/util'
+import { generateRandomColor } from '@/tools/util'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)

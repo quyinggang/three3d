@@ -2,13 +2,14 @@
 import { useTypeList } from '@/hooks/useTypeList'
 import LinkList from '@/components/LinkList.vue'
 
-const { basicList, shaderList } = useTypeList()
+const { configs } = useTypeList()
 </script>
 
 <template>
   <div class="main">
-    <LinkList :list="basicList" />
-    <LinkList :list="shaderList" />
+    <div class="container" v-for="config of configs" :key="config.type">
+      <LinkList :list="config.list" />
+    </div>
   </div>
 </template>
 
@@ -16,5 +17,8 @@ const { basicList, shaderList } = useTypeList()
 .main {
   display: flex;
   padding: 10px 0 0 10px;
+}
+.container:not(:last-child) {
+  margin-right: 3em;
 }
 </style>

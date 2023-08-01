@@ -7,7 +7,7 @@
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { generateRandomColor } from '@/util'
+import { generateRandomColor } from '@/tools/util'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
