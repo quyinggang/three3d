@@ -103,6 +103,11 @@ const configList = [
     path: '/dot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'
+  },
+  {
+    path: '/flashing',
+    title: 'shader之闪烁效果',
+    componentName: 'FlashingShader'
   }
 ]
 
