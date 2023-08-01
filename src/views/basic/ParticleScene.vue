@@ -6,7 +6,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
-import { ParticleEngine, ParticleType, Tween } from '../libs/ParticleEngine.js'
+import { ParticleEngine, ParticleType, Tween } from '@/libs/ParticleEngine.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const canvasElementRef = ref(null)

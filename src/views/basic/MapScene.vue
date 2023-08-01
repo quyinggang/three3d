@@ -8,7 +8,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as d3 from 'd3-geo'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { transform3DTo2D } from '../util'
+import { transform3DTo2D } from '@/util'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)

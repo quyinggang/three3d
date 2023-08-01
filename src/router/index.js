@@ -9,9 +9,11 @@ const routes = [
     component: Home
   },
   ...configList.map((item) => {
+    const { path, componentName, type } = item
+    const subPath = type === 'shader' ? 'shaders' : 'basic'
     return {
-      path: item.path,
-      component: () => import(`@/views/${item.componentName}.vue`)
+      path,
+      component: () => import(`@/views/${subPath}/${componentName}.vue`)
     }
   })
 ]

@@ -71,7 +71,7 @@ onMounted(() => {
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
   const initialCameraPos = new THREE.Vector3(0, 4, 10)
-  const boxPosition = new THREE.Vector3(0, 0.5, 0)
+  const boxPosition = new THREE.Vector3(0, 0, 0)
   let currentKeycode = null
 
   const scene = createScene()
