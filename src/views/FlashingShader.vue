@@ -1,8 +1,6 @@
 <script setup>
 /**
- * 主要学习：
- * - FBX模型文件加载
- * - 模型线框化应用
+ * 主要学习：Shader
  */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
