@@ -2,6 +2,7 @@
 /**
  * 主要学习：
  * - gl_PointCoord
+ * - gl_PointSize
  * - length内置函数
  */
 import { ref, onMounted } from 'vue'
@@ -12,9 +13,14 @@ const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
 const createDotShaderMaterial = () => {
+  /**
+   * modelViewMatrix表示模型视图矩阵，经过该矩阵处理后的顶点位于视图空间坐标系中，即摄像机坐标系
+   * 不同类型的投影（正交投影、透视投影）该坐标系的原点不同，透视投影情况下z轴都是负值
+   */
   const vertexShader = `
 			void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        // gl_PointSize表示顶点大小，mvPosition.z参入计算则实现近大远小效果
         gl_PointSize = 0.2 * (600.0 / -mvPosition.z);
 				gl_Position = projectionMatrix * mvPosition;
 			}
@@ -22,13 +28,13 @@ const createDotShaderMaterial = () => {
   /**
    * length：内置函数，表示长度，length = sqrt(x^2 + y^2)
    * length(a - b)则表示a与b两点之间的直线距离
-   * gl_PointCoord是片元在顶点内坐标
+   * gl_PointCoord是片元在顶点内坐标，坐标范围为[0, 1]
    */
   const fragmentShader = `
       uniform vec3 color;
 
 			void main() {
-        // 当片元距离中心点距离大于0.5则丢弃，从而实现顶点圆形
+        // 当片元与顶点中心点距离大于0.5则丢弃，从而实现顶点圆形
         if (length(gl_PointCoord - vec2(0.5, 0.5)) > 0.5 ) discard;
         gl_FragColor = vec4(color, 1.0);
 			}
