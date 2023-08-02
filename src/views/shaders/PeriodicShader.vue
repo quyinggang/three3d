@@ -49,10 +49,10 @@ const createMesh = () => {
 				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 			}
   `
-
   /**
    * clamp就是min(maxValue, max(value, minValue))
    * sin函数是周期性函数，在一定范围内反复波动，依此可以实现周期性效果
+   * GLSL还提供其他周期性函数，例如cos、mod等，具体的波形周期可以具体查看
    */
   const fragmentShader = `
       uniform vec3 color;
