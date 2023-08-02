@@ -106,7 +106,7 @@ const threeBasicConfigList = [
 const shaderConfigList = [
   {
     path: '/shaderBasic',
-    title: 'shader之基本组成',
+    title: 'shader之最小逻辑',
     componentName: 'BasicShader'
   },
   {
