@@ -115,6 +115,11 @@ const shaderConfigList = [
     componentName: 'DotShader'
   },
   {
+    path: '/shaderFrag',
+    title: 'shader之场景分割',
+    componentName: 'FragShader'
+  },
+  {
     path: '/shaderPeriodic',
     title: 'shader之明暗交替',
     componentName: 'PeriodicShader'

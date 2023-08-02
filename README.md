@@ -23,5 +23,6 @@
 - 粒子引擎实现常见效果：主要学习粒子引擎的应用实现火焰、烟雾等效果
 - shader之基本组成：了解shader的最基本组成
 - shader之圆点粒子：主要学习gl_PointCoord、gl_PointSize、length内置函数
+- shader之场景分割：主要学习gl_FragCoord的应用
 - shader之明暗交替：主要学习clamp内置函数、周期性函数应用
 - shader之闪烁效果：学习使用ShaderMaterial编写Shader
