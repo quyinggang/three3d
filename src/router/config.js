@@ -107,7 +107,7 @@ const shaderConfigList = [
   {
     path: '/shaderBasic',
     title: 'shader之基本组成',
-    componentName: 'ShaderBasic'
+    componentName: 'BasicShader'
   },
   {
     path: '/dot',

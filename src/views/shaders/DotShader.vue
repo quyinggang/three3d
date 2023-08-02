@@ -1,8 +1,8 @@
 <script setup>
 /**
  * 主要学习：
- * - ShaderMaterial
- * - GLSL ES基础
+ * - gl_PointCoord
+ * - length内置函数
  */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
@@ -20,13 +20,15 @@ const createDotShaderMaterial = () => {
 			}
   `
   /**
-   * if (length(gl_PointCoord - vec2( 0.5, 0.5 )) > 0.5 ) discard;
-   * 实现圆点的关键逻辑
+   * length：内置函数，表示长度，length = sqrt(x^2 + y^2)
+   * length(a - b)则表示a与b两点之间的直线距离
+   * gl_PointCoord是片元在顶点内坐标
    */
   const fragmentShader = `
       uniform vec3 color;
 
 			void main() {
+        // 当片元距离中心点距离大于0.5则丢弃，从而实现顶点圆形
         if (length(gl_PointCoord - vec2(0.5, 0.5)) > 0.5 ) discard;
         gl_FragColor = vec4(color, 1.0);
 			}
