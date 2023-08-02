@@ -110,9 +110,14 @@ const shaderConfigList = [
     componentName: 'BasicShader'
   },
   {
-    path: '/dot',
+    path: '/shaderDot',
     title: 'shader之圆点粒子',
     componentName: 'DotShader'
+  },
+  {
+    path: '/shaderPeriodic',
+    title: 'shader之明暗交替',
+    componentName: 'PeriodicShader'
   },
   {
     path: '/flashing',
