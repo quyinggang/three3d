@@ -103,39 +103,32 @@ const threeBasicConfigList = [
   }
 ]
 
-const shaderBasicConfigList = [
+const shaderConfigList = [
   {
     path: '/shaderBasic',
-    title: 'shader基础之基本组成',
+    title: 'shader之基本组成',
     componentName: 'ShaderBasic'
-  }
-]
-
-const shaderEffectConfigList = [
+  },
   {
     path: '/dot',
-    title: 'shader应用之圆点粒子',
+    title: 'shader之圆点粒子',
     componentName: 'DotShader'
   },
   {
     path: '/flashing',
-    title: 'shader应用之闪烁效果',
+    title: 'shader之闪烁效果',
     componentName: 'FlashingShader'
   }
 ]
 
 const configList = [
   {
-    type: TYPE_ALIAS.threeBasic,
+    type: TYPE_ALIAS.basic,
     list: [...threeBasicConfigList]
   },
   {
-    type: TYPE_ALIAS.shaderBasic,
-    list: [...shaderBasicConfigList]
-  },
-  {
-    type: TYPE_ALIAS.shaderEffect,
-    list: [...shaderEffectConfigList]
+    type: TYPE_ALIAS.shaders,
+    list: [...shaderConfigList]
   }
 ]
 

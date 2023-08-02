@@ -21,5 +21,6 @@
 - 模型线框化的N种实现方法：主要学习模型线框化处理
 - 城市建筑模型加载：主要学习FBX模型文件加载、模型线框化处理
 - 粒子引擎实现常见效果：主要学习粒子引擎的应用实现火焰、烟雾等效果
+- shader之基本组成：了解最基本组成的shader结构
 - shader之圆点粒子：主要学习ShaderMaterial、shader基础用法
 - shader之闪烁效果：学习使用ShaderMaterial编写Shader
