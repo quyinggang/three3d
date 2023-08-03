@@ -121,7 +121,7 @@ const shaderConfigList = [
   },
   {
     path: '/shaderPeriodic',
-    title: 'shader之明暗交替',
+    title: 'shader之周期运动',
     componentName: 'PeriodicShader'
   },
   {

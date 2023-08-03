@@ -20,7 +20,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 4, 6)
+  camera.position.set(0, 0, 8)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -75,6 +75,33 @@ const createMesh = () => {
   return new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material)
 }
 
+const createMesh2 = () => {
+  const vertexShader = `
+      uniform float time;
+
+			void main() {
+        vec3 newPosition = vec3(position.xy, sin(time));
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+			}
+  `
+  const fragmentShader = `
+      uniform vec3 color;
+
+			void main() {
+        gl_FragColor = vec4(color, 1.0);
+			}
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      color: { value: new THREE.Color('#FF0000') },
+      time: { value: 1.0 }
+    },
+    vertexShader,
+    fragmentShader
+  })
+  return new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 2), material)
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -87,14 +114,21 @@ onMounted(() => {
   const controls = createControls(camera, renderer.domElement)
 
   const box = createMesh()
+  box.position.set(-1, 0, 0)
   scene.add(box)
 
+  const plane = createMesh2()
+  plane.position.set(1, 0, 0)
+  scene.add(plane)
+
+  const planeMaterialUniforms = plane.material.uniforms
   const materialUniforms = box.material.uniforms
   const clock = new THREE.Clock()
   const render = () => {
     const time = clock.getElapsedTime()
     controls.update()
     materialUniforms.time.value = time
+    planeMaterialUniforms.time.value = time
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
   }
