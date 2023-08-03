@@ -131,8 +131,13 @@ const shaderConfigList = [
   },
   {
     path: '/shaderStep',
-    title: 'shader之step相关函数',
+    title: 'shader之step函数',
     componentName: 'StepShader'
+  },
+  {
+    path: '/shaderTexture',
+    title: 'shader之纹理映射',
+    componentName: 'TextureShader'
   },
   {
     path: '/flashing',
