@@ -1,0 +1,164 @@
+<script setup>
+/**
+ * 主要学习：
+ * - mix内置函数
+ * - uv应用
+ */
+import { ref, onMounted } from 'vue'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+const canvasElementRef = ref(null)
+const containerElementRef = ref(null)
+
+const createScene = () => {
+  // 创建场景
+  const scene = new THREE.Scene()
+  return scene
+}
+
+const createCamera = (aspect) => {
+  // 透视投影摄像机
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
+  camera.position.set(0, 0, 24)
+  // 设置摄像机方向
+  camera.lookAt(0, 0, 0)
+  return camera
+}
+
+const createWebGLRenderer = (canvasElement, width, height) => {
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
+const createControls = (camera, domElement) => {
+  const controls = new OrbitControls(camera, domElement)
+  controls.minDistance = 6
+  controls.maxDistance = 40
+  controls.minPolarAngle = Math.PI / 4
+  controls.maxPolarAngle = (Math.PI / 2) * 0.96
+  return controls
+}
+
+const createMesh = (width, height) => {
+  const vertexShader = `
+			void main() {
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+				gl_Position = projectionMatrix * mvPosition;
+			}
+  `
+  /**
+   * mix是内置的线性混合函数，该函数在两个值之间进行线性插值，即lerp
+   */
+  const fragmentShader = `
+      uniform vec3 uStartColor;
+      uniform vec3 uEndColor;
+      uniform vec2 uResolution;
+
+			void main() {
+        vec2 uv = gl_FragCoord.xy / uResolution.xy;
+        // 实现从左到右渐变
+        vec3 mixColor = mix(uStartColor, uEndColor, uv.x);
+        // 实现从上到下渐变
+        // vec3 mixColor = mix(uStartColor, uEndColor, uv.y);
+        gl_FragColor = vec4(mixColor, 1.0);
+			}
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uStartColor: { value: new THREE.Color('#FF0000') },
+      uEndColor: { value: new THREE.Color('#0000ff') },
+      uResolution: { value: new THREE.Vector2(width, height) }
+    },
+    vertexShader,
+    fragmentShader,
+    side: THREE.DoubleSide
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 2), material)
+  mesh.position.set(-8, 0, 0)
+  return mesh
+}
+
+const createMesh2 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+			void main() {
+        vUV = uv;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+				gl_Position = projectionMatrix * mvPosition;
+			}
+  `
+  /**
+   * vec2 uv = gl_FragCoord.xy / uResolution.xy
+   * 此逻辑下模型位置不同会导致前后颜色应用不同
+   * 而通过顶点着色器传递的uv则不会出现上面问题
+   */
+  const fragmentShader = `
+      uniform vec3 uStartColor;
+      uniform vec3 uEndColor;
+      
+      varying vec2 vUV;
+
+			void main() {
+        vec3 mixColor = mix(uStartColor, uEndColor, vUV.x);
+        gl_FragColor = vec4(mixColor, 1.0);
+			}
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uStartColor: { value: new THREE.Color('#FF0000') },
+      uEndColor: { value: new THREE.Color('#0000ff') }
+    },
+    vertexShader,
+    fragmentShader,
+    side: THREE.DoubleSide
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 2), material)
+  mesh.position.set(8, 0, 0)
+  return mesh
+}
+
+onMounted(() => {
+  const canvasElement = canvasElementRef.value
+  const containerElement = containerElementRef.value
+  const width = containerElement.clientWidth
+  const height = containerElement.clientHeight
+
+  const scene = createScene()
+  const camera = createCamera(width / height)
+  const renderer = createWebGLRenderer(canvasElement, width, height)
+  const controls = createControls(camera, renderer.domElement)
+
+  const mesh = createMesh(canvasElement.width, canvasElement.height)
+  scene.add(mesh)
+
+  const mesh2 = createMesh2()
+  scene.add(mesh2)
+
+  const render = () => {
+    controls.update()
+    renderer.render(scene, camera)
+    window.requestAnimationFrame(render)
+  }
+  render()
+})
+</script>
+
+<template>
+  <div ref="containerElementRef" class="container">
+    <canvas ref="canvasElementRef"></canvas>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+</style>

@@ -125,6 +125,11 @@ const shaderConfigList = [
     componentName: 'PeriodicShader'
   },
   {
+    path: '/shaderMix',
+    title: 'shader之线性渐变',
+    componentName: 'MixShader'
+  },
+  {
     path: '/flashing',
     title: 'shader之闪烁效果',
     componentName: 'FlashingShader'

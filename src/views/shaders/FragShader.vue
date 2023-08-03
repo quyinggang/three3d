@@ -60,9 +60,8 @@ const createMesh = (width, height) => {
     void main() {
       // 屏幕坐标归一化，即转换到范围为[0, 1]
       vec2 uv = gl_FragCoord.xy / uResolution.xy;
-      // 半边绘制区域宽度
-      float halfWidth = uResolution.x * 0.5;
-      if (gl_FragCoord.x < halfWidth) {
+      // 分割场景
+      if (uv.x > 0.5) {
         gl_FragColor = vec4(uv.x, 0.0, uv.y, 1.0);
       } else {
         gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);

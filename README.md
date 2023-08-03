@@ -25,4 +25,5 @@
 - shader之圆点粒子：主要学习gl_PointCoord、gl_PointSize、length内置函数
 - shader之场景分割：主要学习gl_FragCoord的应用
 - shader之明暗交替：主要学习clamp内置函数、周期性函数应用
+- shader之线性渐变：主要学习mix内置函数
 - shader之闪烁效果：学习使用ShaderMaterial编写Shader
