@@ -130,6 +130,11 @@ const shaderConfigList = [
     componentName: 'MixShader'
   },
   {
+    path: '/shaderStep',
+    title: 'shader之step相关函数',
+    componentName: 'StepShader'
+  },
+  {
     path: '/flashing',
     title: 'shader之闪烁效果',
     componentName: 'FlashingShader'

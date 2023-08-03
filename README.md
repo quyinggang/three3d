@@ -26,4 +26,5 @@
 - shader之场景分割：主要学习gl_FragCoord的应用
 - shader之周期运动：主要学习clamp内置函数、周期性函数应用
 - shader之颜色渐变：主要学习mix内置函数、uv应用实现线性渐变、径向渐变
+- shader之step相关函数：主要学习step内置函数、smoothstep内置函数
 - shader之闪烁效果：学习使用ShaderMaterial编写Shader

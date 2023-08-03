@@ -34,7 +34,7 @@ const createDotShaderMaterial = () => {
       uniform vec3 color;
 
 			void main() {
-        // 当片元与顶点中心点距离大于0.5则丢弃，从而实现顶点圆形
+        // 当片元与顶点中心点距离大于0.5则丢弃，从而实现顶点圆形，适用于Points绘制方式
         if (length(gl_PointCoord - vec2(0.5, 0.5)) > 0.5 ) discard;
         gl_FragColor = vec4(color, 1.0);
 			}
