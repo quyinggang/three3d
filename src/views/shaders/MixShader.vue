@@ -144,8 +144,8 @@ const createMesh3 = () => {
 
 			void main() {
         float distance = length(vUV - vec2(0.5));
-        vec3 mixValue = mix(uStartColor, uEndColor, distance / uRadius);
-        gl_FragColor = vec4(vUV.x, 0.0, 1.0, 1.0);
+        vec3 mixColor = mix(uStartColor, uEndColor, distance / uRadius);
+        gl_FragColor = vec4(mixColor, 1.0);
 			}
   `
   const material = new THREE.ShaderMaterial({
