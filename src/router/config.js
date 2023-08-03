@@ -126,7 +126,7 @@ const shaderConfigList = [
   },
   {
     path: '/shaderMix',
-    title: 'shader之线性渐变',
+    title: 'shader之颜色渐变',
     componentName: 'MixShader'
   },
   {

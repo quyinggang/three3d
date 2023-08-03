@@ -20,7 +20,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 0, 24)
+  camera.position.set(0, 0, 20)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -79,8 +79,8 @@ const createMesh = (width, height) => {
     fragmentShader,
     side: THREE.DoubleSide
   })
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 2), material)
-  mesh.position.set(-8, 0, 0)
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 4, 2), material)
+  mesh.position.set(-3, 2, 0)
   return mesh
 }
 
@@ -118,8 +118,48 @@ const createMesh2 = () => {
     fragmentShader,
     side: THREE.DoubleSide
   })
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 2), material)
-  mesh.position.set(8, 0, 0)
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 4, 2), material)
+  mesh.position.set(3, 2, 0)
+  return mesh
+}
+
+const createMesh3 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+			void main() {
+        vUV = uv;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+				gl_Position = projectionMatrix * mvPosition;
+			}
+  `
+  /**
+   * uv坐标值表示纹理坐标，范围是[0, 1]，不同的顶点有不同的uv坐标
+   * 借助不同uv坐标与中心点距离 + mix线性插值颜色，从而实现径向渐变
+   */
+  const fragmentShader = `
+      uniform vec3 uStartColor;
+      uniform vec3 uEndColor;
+      uniform float uRadius;
+      varying vec2 vUV;
+
+			void main() {
+        float distance = length(vUV - vec2(0.5));
+        vec3 mixValue = mix(uStartColor, uEndColor, distance / uRadius);
+        gl_FragColor = vec4(vUV.x, 0.0, 1.0, 1.0);
+			}
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uRadius: { value: 0.5 },
+      uStartColor: { value: new THREE.Color('#fff') },
+      uEndColor: { value: new THREE.Color('#000') }
+    },
+    vertexShader,
+    fragmentShader,
+    side: THREE.DoubleSide
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 4, 2), material)
+  mesh.position.set(-3, -3, 0)
   return mesh
 }
 
@@ -139,6 +179,9 @@ onMounted(() => {
 
   const mesh2 = createMesh2()
   scene.add(mesh2)
+
+  const mesh3 = createMesh3()
+  scene.add(mesh3)
 
   const render = () => {
     controls.update()
