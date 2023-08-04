@@ -140,6 +140,11 @@ const shaderConfigList = [
     componentName: 'TextureShader'
   },
   {
+    path: '/shaderNormal',
+    title: 'shader之六色立方体',
+    componentName: 'NormalShader'
+  },
+  {
     path: '/shaderInner',
     title: 'shader之内发光',
     componentName: 'InnerGlowShader'
