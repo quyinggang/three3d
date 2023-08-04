@@ -140,6 +140,11 @@ const shaderConfigList = [
     componentName: 'TextureShader'
   },
   {
+    path: '/shaderUV',
+    title: 'shader之同心圆环',
+    componentName: 'UVShader'
+  },
+  {
     path: '/shaderNormal',
     title: 'shader之六色立方体',
     componentName: 'NormalShader'
