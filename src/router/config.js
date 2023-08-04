@@ -140,6 +140,11 @@ const shaderConfigList = [
     componentName: 'TextureShader'
   },
   {
+    path: '/shaderContour',
+    title: 'shader之轮廓高亮',
+    componentName: 'ContourShader'
+  },
+  {
     path: '/flashing',
     title: 'shader之闪烁效果',
     componentName: 'FlashingShader'
