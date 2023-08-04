@@ -140,9 +140,9 @@ const shaderConfigList = [
     componentName: 'TextureShader'
   },
   {
-    path: '/shaderContour',
-    title: 'shader之轮廓高亮',
-    componentName: 'ContourShader'
+    path: '/shaderInner',
+    title: 'shader之内发光',
+    componentName: 'InnerGlowShader'
   },
   {
     path: '/flashing',
