@@ -1,6 +1,8 @@
 <script setup>
 /**
- * 主要学习：Shader
+ * 主要学习：
+ * - 外发光效果纹理方式实现
+ * - size更改实现闪烁效果
  */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'

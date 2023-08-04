@@ -29,4 +29,4 @@
 - shader之step相关函数：主要学习step内置函数、smoothstep内置函数
 - shader之纹理映射：主要学习texture2D内置函数
 - shader之内发光：主要学习菲涅尔反射、法线向量应用
-- shader之闪烁效果：学习使用ShaderMaterial编写Shader
+- shader之闪烁效果：主要学习通过纹理实现外发光效果
