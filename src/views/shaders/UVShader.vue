@@ -2,6 +2,7 @@
 /**
  * 主要学习：
  * - 纹理坐标uv
+ * - atan内置函数应用
  */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
@@ -19,7 +20,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 0, 3)
+  camera.position.set(0, 0, 6)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -88,7 +89,64 @@ const createMesh = () => {
     transparent: true,
     side: THREE.DoubleSide
   })
-  return new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(-1, 0, 0)
+  return mesh
+}
+
+const createMesh2 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  /**
+   * atan将当前坐标转换为角度
+   */
+  const fragmentShader = `
+    uniform vec3 uColor[3];
+
+    varying vec2 vUV;
+
+    const float radius = 0.15;
+    const float step = 0.015;
+
+    void main() {
+      vec2 center = vec2(0.5, 0.5);
+      float distance = length(vUV - center);
+      int targetIndex = -1;
+      for(int index = 1; index <= 3; index++) {
+        if (abs(distance - (radius * float(index))) < step) {
+          targetIndex = index - 1;
+          break;
+        }
+      }
+
+      vec2 direction = vec2(center.x - vUV.x, center.y - vUV.y);
+      float angle = abs(degrees(atan(direction.y, direction.x)));
+      bool isInRange = (angle >= 15.0 && angle <= 45.0) || (angle >= 75.0 && angle <= 105.0) || (angle >= 135.0 && angle <= 165.0);
+      float opacity = targetIndex >= 0 && isInRange ? 1.0 : 0.0;
+      gl_FragColor = vec4(uColor[targetIndex], opacity);
+    }
+
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: [new THREE.Color('#00FFFF'), new THREE.Color('#FF00FF'), new THREE.Color('#DC143C')]
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(1, 0, 0)
+  return mesh
 }
 
 onMounted(() => {
@@ -104,6 +162,9 @@ onMounted(() => {
 
   const mesh = createMesh()
   scene.add(mesh)
+
+  const mesh2 = createMesh2()
+  scene.add(mesh2)
 
   const render = () => {
     controls.update()
