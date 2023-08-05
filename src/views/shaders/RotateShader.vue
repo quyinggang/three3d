@@ -72,7 +72,7 @@ const createMesh = () => {
 
     // 旋转矩阵
     mat2 rotate2D(float rad) {
-      return mat2(cos(rad), sin(rad), -sin(rad), cos(rad));
+      return mat2(cos(rad), -sin(rad), sin(rad), cos(rad));
     }
 
     int getIndex(vec2 uvPosition) {
