@@ -158,6 +158,11 @@ const shaderConfigList = [
     path: '/flashing',
     title: 'shader之闪烁效果',
     componentName: 'FlashingShader'
+  },
+  {
+    path: '/shaderRotate',
+    title: 'shader之旋转圆环',
+    componentName: 'RotateShader'
   }
 ]
 
