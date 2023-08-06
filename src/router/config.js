@@ -163,6 +163,11 @@ const shaderConfigList = [
     path: '/shaderRotate',
     title: 'shader之旋转圆环',
     componentName: 'RotateShader'
+  },
+  {
+    path: '/shaderSpread',
+    title: 'shader之涟漪扩散',
+    componentName: 'SpreadShader'
   }
 ]
 
