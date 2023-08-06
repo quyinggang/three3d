@@ -30,6 +30,7 @@
 - shader之纹理映射：主要学习texture2D内置函数
 - shader之同心圆环：主要学习uv坐标的应用、atan内置函数应用
 - shader之六色立方体：主要学习法线向量normal的应用
+- shader之FragCoord与UV：主要学习基于gl_FragCoord归一化坐标uv、纹理坐标uv二者不同的应用场景
 - shader之内发光：主要学习菲涅尔反射、法线向量应用
 - shader之闪烁效果：主要学习通过纹理实现外发光效果
 - shader之旋转圆环：主要学习旋转矩阵的应用

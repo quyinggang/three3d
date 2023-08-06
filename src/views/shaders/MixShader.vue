@@ -95,8 +95,8 @@ const createMesh2 = () => {
   `
   /**
    * vec2 uv = gl_FragCoord.xy / uResolution.xy
-   * 此逻辑下模型位置不同会导致前后颜色应用不同
-   * 而通过顶点着色器传递的uv则不会出现上面问题
+   * 此逻辑下模型旋转后导致模型片元坐标变化从而出现不同
+   * 而通过顶点着色器传递的uv坐标在每个平面都是确定的，所以不会出现上面问题
    */
   const fragmentShader = `
       uniform vec3 uStartColor;

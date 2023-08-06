@@ -150,6 +150,11 @@ const shaderConfigList = [
     componentName: 'NormalShader'
   },
   {
+    path: '/shaderFragUV',
+    title: 'shader之FragCoord与UV',
+    componentName: 'FragUVShader'
+  },
+  {
     path: '/shaderInner',
     title: 'shader之内发光',
     componentName: 'InnerGlowShader'

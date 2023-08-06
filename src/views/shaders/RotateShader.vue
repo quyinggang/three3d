@@ -96,7 +96,7 @@ const createMesh = () => {
       float index = float(targetIndex + 1);
       int rotateDirection = mod(index, 2.0) == 0.0 ? -1 : 1;
       float time = float(rotateDirection) * index * speed * uTime;
-      vec2 uvPosition = (center - vUV) * rotate2D(time);
+      vec2 uvPosition = (vUV - center) * rotate2D(time);
 
       // 圆环间隔
       float angle = abs(degrees(atan(uvPosition.y, uvPosition.x)));
