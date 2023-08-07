@@ -57,13 +57,8 @@ const createMesh = () => {
   `
   const fragmentShader = `
     uniform vec3 uColor;
-    uniform float uTime;
 
     varying vec2 vUV;
-
-    mat2 rotate2D(float rad) {
-      return mat2(cos(rad), -sin(rad), sin(rad), cos(rad));
-    }
 
     float circle(vec2 position, vec2 center, float radius) {
       float distance = length(position - center);
