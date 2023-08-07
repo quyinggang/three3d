@@ -432,9 +432,13 @@ const createMesh8 = () => {
 
     varying vec2 vUV;
 
+    // 获取坐标距离线段的距离，通过判断该距离值可以着色线段一侧的所有片元
     float lineDistance(vec2 position, vec2 start, vec2 end) {
       vec3 line = vec3(start - end, 0.0);
       vec3 pointEnd = vec3(position - end, 0.0);
+      // 叉乘的结果是一个新向量，被称为法向量，其垂直于两个向量所在平面，其方向的判断使用右手定则
+      // 三维向量这意味着z值可能是负值，z值就是position距离line的距离
+      // z值大小 = length(叉乘值)，但是z值存在负值
       return cross(pointEnd, normalize(line)).z;
     }
 
@@ -465,14 +469,14 @@ const createMesh8 = () => {
       if (distance1 >= 0.0 && distance2 >= 0.0 && distance3 >= 0.0 || (distance1 <= 0.0 && distance2 <= 0.0 && distance3 <= 0.0)) {
         ratio = -min(abs(distance1), min(abs(distance2), abs(distance3)));
       } else {
-        ratio = min(straightLine(position, start, middle), min(straightLine(position, middle, end), straightLine(position, end, start)));
+        // ratio = min(straightLine(position, start, middle), min(straightLine(position, middle, end), straightLine(position, end, start)));
       }
 
       return 1.0 - smoothstep(0.0, smoothness, ratio);
     }
 
     void main() {
-      float ratio = triangle(vUV, vec2(0.1, 0.3), vec2(0.5, 0.8), vec2(0.8, 0.3));
+      float ratio = triangle(vUV, vec2(0.1, 0.3), vec2(0.3, 0.8), vec2(0.8, 0.3));
       gl_FragColor = vec4(uColor * ratio, 1.0);
     }
   `
