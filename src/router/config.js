@@ -155,11 +155,6 @@ const shaderConfigList = [
     componentName: 'FragUVShader'
   },
   {
-    path: '/shaderShape',
-    title: 'shader之二维图形',
-    componentName: 'ShapeShader'
-  },
-  {
     path: '/shaderInner',
     title: 'shader之内发光',
     componentName: 'InnerGlowShader'
@@ -178,6 +173,11 @@ const shaderConfigList = [
     path: '/shaderSpread',
     title: 'shader之涟漪扩散',
     componentName: 'SpreadShader'
+  },
+  {
+    path: '/shaderShape',
+    title: 'shader之二维图形',
+    componentName: 'ShapeShader'
   }
 ]
 
