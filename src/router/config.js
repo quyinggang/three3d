@@ -178,6 +178,11 @@ const shaderConfigList = [
     path: '/shaderShape',
     title: 'shader之二维图形',
     componentName: 'ShapeShader'
+  },
+  {
+    path: '/shaderTransform',
+    title: 'shader之变换矩阵',
+    componentName: 'TransformShader'
   }
 ]
 

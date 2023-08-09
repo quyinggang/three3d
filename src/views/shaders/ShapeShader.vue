@@ -18,7 +18,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 0, 11)
+  camera.position.set(0, 0, 14)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -291,36 +291,15 @@ const createMesh6 = () => {
 
     varying vec2 vUV;
 
-    // 返回点距离线段的距离从而实现线段绘制
-    float straightLine(vec2 position, vec2 start, vec2 end) {
-      float smoothness = 0.05;
-      // 线段向量
-      vec3 line = vec3(start - end, 0.0);
-      // 当前点与线段开始点、结束点构成的向量
-      vec3 pointEnd = vec3(position - end, 0.0);
-      vec3 pointStart = vec3(position - start, 0.0);
-
-      float lineLength = length(line);
-      // 通过点积可以判断判断点向量与线段向量的相似度，结果在[-1, 1]之间，0表示垂直，> 0同向，< 0反向
-      // lineLength参入计算主要是用于优化片元计算量
-      float proj = dot(pointEnd, line) / lineLength;
-
-      float distance = 0.0;
-      if (proj >= 0.0 && proj <= lineLength) {
-        // 归一化线段向量，线段向量方向不变长度变成1
-        vec3 normalizeLine = normalize(line);
-        // 叉乘得到基于uv坐标向量与归一化的线段向量得到的新向量p
-        // p的长度就是uv坐标向量与线段向量组成的平行四边形面积
-        // 由于线段向量归一化长度为1，此时平行四边形面积就是uv坐标向量与线段向量的垂直距离
-        distance = length(cross(pointEnd, normalizeLine));
-      } else {
-        distance = min(length(pointEnd), length(pointStart));
-      }
-      return 1.0 - smoothstep(0.0, smoothness, distance);
+    float straightLine(vec2 position, vec2 start, vec2 end, float lineWidth, float radius) {
+      vec2 direction = position - start;
+      vec2 line = end - start;
+      float h = clamp(dot(direction, line) / dot(line, line), 0.0, 1.0 );
+      return 1.0 - smoothstep(0.0, lineWidth, length(direction - line * h) - radius);
     }
 
     void main() {
-      float ratio = straightLine(vUV, vec2(0.1, 0.8), vec2(0.8, 0.2));
+      float ratio = straightLine(vUV, vec2(0.5, 0.8), vec2(0.8, 0.2), 0.03, 0.0);
       gl_FragColor = vec4(uColor * ratio, 1.0);
     }
   `
@@ -354,36 +333,24 @@ const createMesh7 = () => {
 
     varying vec2 vUV;
 
-    float straightLine(vec2 position, vec2 start, vec2 end) {
-      vec3 line = vec3(start - end, 0.0);
-      vec3 pointEnd = vec3(position - end, 0.0);
-      vec3 pointStart = vec3(position - start, 0.0);
-
-      float lineLength = length(line);
-      float proj = dot(pointEnd, line) / lineLength;
-
-      float distance = 0.0;
-      if (proj >= 0.0 && proj <= lineLength) {
-        vec3 normalizeLine = normalize(line);
-        distance = length(cross(pointEnd, normalizeLine));
-      } else {
-        distance = min(length(pointEnd), length(pointStart));
-      }
-      return distance;
+    float straightLine(vec2 position, vec2 start, vec2 end, float lineWidth, float radius) {
+      vec2 direction = position - start;
+      vec2 line = end - start;
+      float h = clamp(dot(direction, line) / dot(line, line), 0.0, 1.0 );
+      return smoothstep(0.0, lineWidth, length(direction - line * h) - radius);
     }
 
     float polyline(vec2 position, vec2 points[4]) {
       float ratio = 1.0;
-      float smoothness = 0.05;
       int len = points.length();
       for (int index = 0; index < len - 1; index++) {
         vec2 current = points[index];
         vec2 next = points[index + 1];
-        float result = straightLine(vUV, current, next);
+        float result = straightLine(vUV, current, next, 0.03, 0.0);
         // 使用min取最小值可以处理线段重叠处颜色
         ratio = min(ratio, result);
       }
-      return 1.0 - smoothstep(0.0, smoothness, ratio);
+      return 1.0 - ratio;
     }
 
     void main() {
@@ -427,47 +394,21 @@ const createMesh8 = () => {
 
     varying vec2 vUV;
 
-    // 获取坐标距离线段的距离，通过判断该距离值可以着色线段一侧的所有片元
-    float lineDistance(vec2 position, vec2 start, vec2 end) {
-      vec3 line = vec3(start - end, 0.0);
-      vec3 pointEnd = vec3(position - end, 0.0);
-      // 叉乘的结果是一个新向量，被称为法向量，其垂直于两个向量所在平面，其方向的判断使用右手定则
-      // 三维向量这意味着z值可能是负值，z值就是position距离line的距离
-      // z值大小 = length(叉乘值)，但是z值存在负值
-      return cross(pointEnd, normalize(line)).z;
-    }
-
-    float straightLine(vec2 position, vec2 start, vec2 end) {
-      vec3 line = vec3(start - end, 0.0);
-      vec3 pointEnd = vec3(position - end, 0.0);
-      vec3 pointStart = vec3(position - start, 0.0);
-
-      float lineLength = length(line);
-      float proj = dot(pointEnd, line) / lineLength;
-
-      float distance = 0.0;
-      if (proj >= 0.0 && proj <= lineLength) {
-        vec3 normalizeLine = normalize(line);
-        distance = length(cross(pointEnd, normalizeLine));
-      } else {
-        distance = min(length(pointEnd), length(pointStart));
-      }
-      return distance;
+    float straightLine(vec2 position, vec2 start, vec2 end, float lineWidth, float radius) {
+      vec2 direction = position - start;
+      vec2 line = end - start;
+      float h = clamp(dot(direction, line) / dot(line, line), 0.0, 1.0 );
+      return smoothstep(0.0, lineWidth, length(direction - line * h) - radius);
     }
 
     float triangle(vec2 position, vec2 start, vec2 middle, vec2 end) {
       float ratio = 1.0;
       float smoothness = 0.03;
-      float distance1 = lineDistance(position, start, middle);
-      float distance2 = lineDistance(position, middle, end);
-      float distance3 = lineDistance(position, end, start);
-      if (distance1 >= 0.0 && distance2 >= 0.0 && distance3 >= 0.0 || (distance1 <= 0.0 && distance2 <= 0.0 && distance3 <= 0.0)) {
-        ratio = -min(abs(distance1), min(abs(distance2), abs(distance3)));
-      } else {
-        ratio = min(straightLine(position, start, middle), min(straightLine(position, middle, end), straightLine(position, end, start)));
-      }
+      float ratio1 = straightLine(position, start, middle, 0.03, 0.0);
+      float ratio2 = straightLine(position, middle, end, 0.03, 0.0);
+      float ratio3 = straightLine(position, start, end, 0.03, 0.0);
 
-      return 1.0 - smoothstep(0.0, smoothness, ratio);
+      return 1.0 - min(ratio1, min(ratio2, ratio3));
     }
 
     void main() {
@@ -1003,6 +944,114 @@ const createMesh19 = () => {
   return mesh
 }
 
+// 实心三角形
+const createMesh20 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+
+    varying vec2 vUV;
+
+    #define PI 3.14159265359
+    #define TWO_PI 6.28318530718
+
+
+    float triangle(vec2 st, vec2 start, vec2 middle, vec2 end, float smoothness) {
+      
+      vec3 e0, e1, e2;
+      e0.xy = normalize(end - start).yx * vec2(1.0, -1.0);
+      e1.xy = normalize(middle - end).yx * vec2(1.0, -1.0);
+      e2.xy = normalize(start - middle).yx * vec2(1.0, -1.0);
+      
+      e0.z = dot(e0.xy, start) - smoothness;
+      e1.z = dot(e1.xy, end) - smoothness;
+      e2.z = dot(e2.xy, middle) - smoothness;
+      
+      float a = max(0.0, dot(e0.xy, st) - e0.z);
+      float b = max(0.0, dot(e1.xy, st) - e1.z);
+      float c = max(0.0, dot(e2.xy, st) - e2.z);
+      return smoothstep(smoothness * 2.0, 1e-7, length(vec3(a, b, c)));
+    }
+
+    float triangle2(vec2 coord, int number, float size) {
+      float a = atan(coord.x, coord.y) + PI;
+      float r = TWO_PI/float(number);
+      float distance = cos(floor(.5+a/r)*r-a)*length(coord);
+      return 1.0 - smoothstep(size, size + 0.01, distance);
+    }
+
+    void main() {
+      float ratio = triangle(vUV, vec2(0.0, 0.3), vec2(0.8, 0.8), vec2(0.6, 0.4), 0.001);
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#BA55D3')
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(3, -3, 0)
+  return mesh
+}
+
+// 正多边形
+const createMesh21 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+
+    varying vec2 vUV;
+
+    #define PI 3.14159265359
+    #define TWO_PI 6.28318530718
+
+    float regularPolygon(vec2 coord, int number, float size) {
+      float a = atan(coord.x, coord.y) + PI;
+      float r = TWO_PI/float(number);
+      float distance = cos(floor(.5+a/r)*r-a)*length(coord);
+      return 1.0 - smoothstep(size, size + 0.01, distance);
+    }
+
+    void main() {
+      float ratio = regularPolygon(vUV - vec2(0.5), 6, 0.4);
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#BA55D3')
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(-3, -5, 0)
+  return mesh
+}
+
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -1069,6 +1118,12 @@ onMounted(() => {
 
   const mesh19 = createMesh19()
   scene.add(mesh19)
+
+  const mesh20 = createMesh20()
+  scene.add(mesh20)
+
+  const mesh21 = createMesh21()
+  scene.add(mesh21)
 
   const render = () => {
     renderer.render(scene, camera)
