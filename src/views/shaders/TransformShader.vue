@@ -1,11 +1,6 @@
 <script setup>
-/**
- * 主要学习：
- * - 法线向量normal
- */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -33,13 +28,6 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   renderer.setSize(width, height)
   renderer.setPixelRatio(window.devicePixelRatio)
   return renderer
-}
-
-const createControls = (camera, domElement) => {
-  const controls = new OrbitControls(camera, domElement)
-  controls.minDistance = 2
-  controls.maxDistance = 40
-  return controls
 }
 
 // 旋转矩阵应用
@@ -297,7 +285,6 @@ onMounted(() => {
   const scene = createScene()
   const camera = createCamera(width / height)
   const renderer = createWebGLRenderer(canvasElement, width, height)
-  const controls = createControls(camera, renderer.domElement)
 
   const mesh1 = createMesh1()
   scene.add(mesh1)
@@ -323,7 +310,6 @@ onMounted(() => {
     mesh3Uniforms.uTime.value = elapsedTime
     mesh4Uniforms.uTime.value = elapsedTime
 
-    controls.update()
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
   }

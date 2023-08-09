@@ -1,8 +1,4 @@
 <script setup>
-/**
- * 主要学习：
- * - gl_FragCoord与UV坐标的不同应用场景
- */
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
 
@@ -962,6 +958,15 @@ const createMesh20 = () => {
     #define PI 3.14159265359
     #define TWO_PI 6.28318530718
 
+    // 判断点到直线的距离，也可以通过三次边处理来构建三角形
+    float lineDistance(vec2 coord, vec2 start, vec2 end) {
+      vec3 line = vec3(start - end, 0.0);
+      vec3 pointEnd = vec3(coord - end, 0.0);
+      // 叉乘的结果是一个新向量，被称为法向量，其垂直于两个向量所在平面，其方向的判断使用右手定则
+      // 三维向量这意味着z值可能是负值，z值就是coord距离line的距离
+      // z值大小 = length(叉乘值)，但是z值存在负值
+      return cross(pointEnd, normalize(line)).z;
+    }
 
     float triangle(vec2 st, vec2 start, vec2 middle, vec2 end, float smoothness) {
       

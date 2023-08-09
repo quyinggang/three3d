@@ -183,6 +183,11 @@ const shaderConfigList = [
     path: '/shaderTransform',
     title: 'shader之变换矩阵',
     componentName: 'TransformShader'
+  },
+  {
+    path: '/shaderSweep',
+    title: 'shader之扇形扫描',
+    componentName: 'SweepShader'
   }
 ]
 
