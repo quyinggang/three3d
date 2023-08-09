@@ -14,7 +14,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 0, 4)
+  camera.position.set(0, 0, 6)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
