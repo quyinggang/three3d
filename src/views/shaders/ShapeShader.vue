@@ -138,7 +138,7 @@ const createMesh3 = () => {
       float distance = length(position - center);
       float outerCircle = smoothstep(outerRadius, outerRadius + step, distance);
       float innerCircle = smoothstep(innerRadius, innerRadius + step, distance);
-      return outerCircle - innerCircle;
+      return abs(outerCircle - innerCircle);
     }
 
     void main() {
