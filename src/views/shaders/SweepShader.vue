@@ -14,7 +14,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 0, 6)
+  camera.position.set(0, 0, 8)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -80,7 +80,7 @@ const createMesh1 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(-1.5, 0, 0)
+  mesh.position.set(-1.5, 1, 0)
   return mesh
 }
 
@@ -135,7 +135,7 @@ const createMesh2 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(0, 0, 0)
+  mesh.position.set(0, 1, 0)
   return mesh
 }
 
@@ -163,8 +163,8 @@ const createMesh3 = () => {
     float sectorShape(vec2 coord, float radius, float angle) {
       float ratio = 0.0;
       float distance = length(coord);
-      float rad = mod(atan(coord.y, coord.x) + angle, PI * 2.0);
       if (distance <= radius) {
+        float rad = mod(atan(coord.y, coord.x) + angle, PI * 2.0);
         ratio = 1.0 - rad;
       }
       return ratio;
@@ -204,7 +204,163 @@ const createMesh3 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(1.5, 0, 0)
+  mesh.position.set(1.5, 1, 0)
+  return mesh
+}
+
+const createMesh4 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+    uniform float uTime;
+
+    varying vec2 vUV;
+
+    const float PI = 3.1415926535897932384626433832795;
+
+    // 扇形区域
+    float sectorShape(vec2 coord, float radius, float angle) {
+      float ratio = 0.0;
+      float distance = length(coord);
+      float rad = mod(atan(coord.y, coord.x) + angle, PI * 2.0);
+      if (distance <= radius && distance >= radius - 0.02) {
+        ratio = 1.0 - rad;
+      }
+      return ratio;
+    }
+
+    void main() {
+      vec2 center = vec2(0.5, 0.5);
+      float ratio = sectorShape(vUV - center, 0.4, uTime);
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#00FFFF')
+      },
+      uTime: {
+        value: 0.0
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(-1.5, -1, 0)
+  return mesh
+}
+
+const createMesh5 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+    uniform float uTime;
+
+    varying vec2 vUV;
+
+    const float PI = 3.1415926535897932384626433832795;
+
+    // 扇形区域
+    float sectorShape(vec2 coord, float radius, float angle) {
+      float ratio = 0.0;
+      float distance = length(coord);
+      float rad = mod(atan(coord.y, coord.x) + angle, PI / 1.5);
+      if (distance <= radius) {
+        ratio = 1.0 - smoothstep(0.9, 0.95, rad);
+      }
+      return ratio;
+    }
+
+    void main() {
+      vec2 center = vec2(0.5, 0.5);
+      float ratio = sectorShape(vUV - center, 0.4, uTime / 2.0);
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#00FFFF')
+      },
+      uTime: {
+        value: 0.0
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(-0, -1, 0)
+  return mesh
+}
+
+const createMesh6 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+    uniform float uTime;
+
+    varying vec2 vUV;
+
+    const float PI = 3.1415926535897932384626433832795;
+
+    // 扇形区域
+    float sectorShape(vec2 coord, float radius, float angle) {
+      float ratio = 0.0;
+      float distance = length(coord);
+      float rad = atan(coord.y, coord.x);
+      if (distance <= radius) {
+        ratio = smoothstep(-0.3, -0.35, rad) + smoothstep(0.3, 0.35, rad);
+      }
+      return ratio;
+    }
+
+    void main() {
+      vec2 center = vec2(0.5, 0.5);
+      float ratio = sectorShape(vUV - center, 0.4, uTime / 2.0);
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#00FFFF')
+      },
+      uTime: {
+        value: 0.0
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(1.5, -1, 0)
   return mesh
 }
 
@@ -227,13 +383,26 @@ onMounted(() => {
   const mesh3 = createMesh3()
   scene.add(mesh3)
 
+  const mesh4 = createMesh4()
+  scene.add(mesh4)
+
+  const mesh5 = createMesh5()
+  scene.add(mesh5)
+
+  const mesh6 = createMesh6()
+  scene.add(mesh6)
+
   const mesh1Uniforms = mesh1.material.uniforms
   const mesh3Uniforms = mesh3.material.uniforms
+  const mesh4Uniforms = mesh4.material.uniforms
+  const mesh6Uniforms = mesh6.material.uniforms
   const clock = new THREE.Clock()
   const render = () => {
     const time = clock.getElapsedTime()
     mesh1Uniforms.uTime.value = time
     mesh3Uniforms.uTime.value = time
+    mesh4Uniforms.uTime.value = time
+    mesh6Uniforms.uTime.value = time
 
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
