@@ -188,6 +188,11 @@ const shaderConfigList = [
     path: '/shaderSweep',
     title: 'shader之扇形扫描',
     componentName: 'SweepShader'
+  },
+  {
+    path: '/shaderRise',
+    title: 'shader之缓动上升',
+    componentName: 'RiseShader'
   }
 ]
 
