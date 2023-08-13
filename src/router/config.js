@@ -193,6 +193,11 @@ const shaderConfigList = [
     path: '/shaderRise',
     title: 'shader之缓动上升',
     componentName: 'RiseShader'
+  },
+  {
+    path: '/shaderTrail',
+    title: 'shader之拖尾飘动',
+    componentName: 'TrailShader'
   }
 ]
 
