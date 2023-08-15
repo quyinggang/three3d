@@ -198,6 +198,11 @@ const shaderConfigList = [
     path: '/shaderTrail',
     title: 'shader之拖尾飘动',
     componentName: 'TrailShader'
+  },
+  {
+    path: '/shaderVortex',
+    title: 'shader之旋涡效果',
+    componentName: 'VortexShader'
   }
 ]
 
