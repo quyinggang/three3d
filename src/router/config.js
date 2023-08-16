@@ -206,6 +206,14 @@ const shaderConfigList = [
   }
 ]
 
+const effectConfigList = [
+  {
+    path: '/effectFlyLine',
+    title: '飞线效果',
+    componentName: 'FlyLineEffect'
+  }
+]
+
 const configList = [
   {
     type: TYPE_ALIAS.basic,
@@ -214,6 +222,10 @@ const configList = [
   {
     type: TYPE_ALIAS.shaders,
     list: [...shaderConfigList]
+  },
+  {
+    type: TYPE_ALIAS.effects,
+    list: [...effectConfigList]
   }
 ]
 
