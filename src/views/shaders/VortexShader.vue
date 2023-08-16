@@ -129,6 +129,7 @@ const createMesh3 = () => {
     void main() {
       vec2 position = vUV - vec2(0.5);
       float t = atan(position.y, position.x) / PI;
+      // length(position * 5.0)就是弯曲值
       float ratio = fract(t * 8.0 + length(position * 5.0) + uTime);
       gl_FragColor = vec4(uColor * ratio, 1.0);
     }
