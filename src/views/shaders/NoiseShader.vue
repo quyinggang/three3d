@@ -309,17 +309,19 @@ const createMesh5 = () => {
 
     // Voronoi Noise是基于特征点的采样，以距离值作为噪声值，也被称为网格噪声、晶胞噪声
     // Worley Noise基于Voronoi Noise之上的优化算法
-    float voronoiNoise(vec2 uv) {
+    float voronoiNoise(vec2 uv, float time) {
       float dist = 16.0;
       vec2 intPos = floor(uv);
-      vec2 fracPos = fract(uv);
+      vec2 fractPos = fract(uv);
 
       // 3x3九宫格采样
       for(int x = -1; x <= 1; x++) {
           for(int y = -1; y <= 1 ; y++) {
             vec2 origin = vec2(x, y);
             vec2 offset = random2D(intPos + origin);
-            float distance = length(origin + offset - fracPos);
+            // 通过时间动态变更偏移量
+            offset += sin(offset * uTime) * 0.5;
+            float distance = length(origin + offset - fractPos);
             dist = min(dist, distance);
           }
       }
@@ -329,7 +331,7 @@ const createMesh5 = () => {
 
     void main() {
       vec2 position = vUV - vec2(0.5);
-      float ratio = voronoiNoise(position * 5.0);
+      float ratio = voronoiNoise(position * 5.0, uTime);
       gl_FragColor = vec4(uColor * ratio, 1.0);
     }
   `
@@ -348,6 +350,77 @@ const createMesh5 = () => {
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
   mesh.position.set(0, -1, 0)
+  return mesh
+}
+
+const createMesh6 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform vec3 uColor;
+    uniform float uTime;
+
+    varying vec2 vUV;
+
+    vec3 random3(vec3 p3) {
+      p3 = fract(p3 * vec3(.1031,.11369,.2323));
+      p3 += dot(p3, p3.yxz+19.19);
+      return -1.0 + 2.0 * fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
+    }
+
+    // 三维Perlin Noise
+    float gradientNoise(vec3 p) {
+      vec3 pi = floor(p);
+      vec3 pf = p - pi;
+      vec3 w = pf * pf * (3.0 - 2.0 * pf);
+    
+      return 	mix(
+              mix(
+                    mix(dot(pf - vec3(0, 0, 0), random3(pi + vec3(0, 0, 0))), 
+                          dot(pf - vec3(1, 0, 0), random3(pi + vec3(1, 0, 0))),
+                          w.x),
+                    mix(dot(pf - vec3(0, 0, 1), random3(pi + vec3(0, 0, 1))), 
+                          dot(pf - vec3(1, 0, 1), random3(pi + vec3(1, 0, 1))),
+                          w.x),
+                    w.z),
+              mix(
+                      mix(dot(pf - vec3(0, 1, 0), random3(pi + vec3(0, 1, 0))), 
+                          dot(pf - vec3(1, 1, 0), random3(pi + vec3(1, 1, 0))),
+                          w.x),
+                      mix(dot(pf - vec3(0, 1, 1), random3(pi + vec3(0, 1, 1))), 
+                          dot(pf - vec3(1, 1, 1), random3(pi + vec3(1, 1, 1))),
+                          w.x),
+                    w.z),
+            w.y);
+    }
+
+    void main() {
+      vec2 position = vUV - vec2(0.5);
+      float ratio = gradientNoise(vec3(position.xy * 10.0, uTime));
+      gl_FragColor = vec4(uColor * ratio, 1.0);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: {
+        value: new THREE.Color('#00FFFF')
+      },
+      uTime: {
+        value: 0.0
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
+  mesh.position.set(1.5, -1, 0)
   return mesh
 }
 
@@ -376,7 +449,17 @@ onMounted(() => {
   const mesh5 = createMesh5()
   scene.add(mesh5)
 
+  const mesh6 = createMesh6()
+  scene.add(mesh6)
+
+  const mesh5Uniforms = mesh5.material.uniforms
+  const mesh6Uniforms = mesh6.material.uniforms
+  const clock = new THREE.Clock()
   const render = () => {
+    const elapsedTime = clock.getElapsedTime()
+    mesh5Uniforms.uTime.value = elapsedTime
+    mesh6Uniforms.uTime.value = elapsedTime
+
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
   }
