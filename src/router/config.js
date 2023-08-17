@@ -208,6 +208,11 @@ const shaderConfigList = [
     path: '/shaderNoise',
     title: 'shader之随机与噪声',
     componentName: 'NoiseShader'
+  },
+  {
+    path: '/shaderFBM',
+    title: 'shader之分形布朗运动',
+    componentName: 'FBMShader'
   }
 ]
 
