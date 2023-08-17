@@ -203,6 +203,11 @@ const shaderConfigList = [
     path: '/shaderVortex',
     title: 'shader之旋涡效果',
     componentName: 'VortexShader'
+  },
+  {
+    path: '/shaderNoise',
+    title: 'shader之随机与噪声',
+    componentName: 'NoiseShader'
   }
 ]
 
