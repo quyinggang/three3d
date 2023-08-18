@@ -52,10 +52,10 @@ const createMesh = () => {
   // 创建一个沿着三维曲线延伸的管道，这里调整参数生成存在宽度的曲线平面，类似道路效果
   const geometry = new THREE.TubeGeometry(curve, 64, 0.5, 2, false)
 
-  const texture = new THREE.TextureLoader().load('/src/assets/textures/other/arrow.jpeg')
+  const texture = new THREE.TextureLoader().load('/src/assets/textures/other/arrow.png')
   texture.wrapS = THREE.RepeatWrapping
   texture.wrapT = THREE.RepeatWrapping
-  texture.repeat.set(32, 2)
+  texture.repeat.set(16, 2)
 
   const material = new THREE.MeshBasicMaterial({
     map: texture,
@@ -68,7 +68,7 @@ const applyTween = (texture) => {
   const tween = new TWEEN.Tween({ x: 0 }).to({ x: 100 }).yoyo(true).repeat(Infinity)
   tween.onUpdate(() => {
     // 利用偏移属性来实现流动
-    texture.offset.x -= 0.02
+    texture.offset.x -= 0.015
   })
   tween.start()
 }

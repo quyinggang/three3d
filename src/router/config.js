@@ -219,13 +219,8 @@ const shaderConfigList = [
 const effectConfigList = [
   {
     path: '/particleEffect',
-    title: '粒子引擎实现常见效果',
+    title: '粒子引擎应用',
     componentName: 'ParticleEffect'
-  },
-  {
-    path: '/effectFlyLine',
-    title: '飞线效果',
-    componentName: 'FlyLineEffect'
   }
 ]
 
