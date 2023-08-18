@@ -95,6 +95,11 @@ const threeBasicConfigList = [
     path: '/city',
     title: '城市建筑模型加载',
     componentName: 'CityScene'
+  },
+  {
+    path: '/flow',
+    title: '纹理流动',
+    componentName: 'FlowScene'
   }
 ]
 
