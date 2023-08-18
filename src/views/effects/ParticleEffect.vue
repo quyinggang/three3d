@@ -1,7 +1,7 @@
 <script setup>
 /**
  * 主要学习：
- * - ParticleSystem实现烟雾、火焰、烟花、下雨、下雪等效果
+ * - 粒子引擎实现烟雾、火焰、烟花、下雨、下雪等效果
  */
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'

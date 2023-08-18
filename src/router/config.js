@@ -95,11 +95,6 @@ const threeBasicConfigList = [
     path: '/city',
     title: '城市建筑模型加载',
     componentName: 'CityScene'
-  },
-  {
-    path: '/particle',
-    title: '粒子引擎实现常见效果',
-    componentName: 'ParticleScene'
   }
 ]
 
@@ -217,6 +212,11 @@ const shaderConfigList = [
 ]
 
 const effectConfigList = [
+  {
+    path: '/particleEffect',
+    title: '粒子引擎实现常见效果',
+    componentName: 'ParticleEffect'
+  },
   {
     path: '/effectFlyLine',
     title: '飞线效果',

@@ -12,8 +12,10 @@ const particleVertexShader = `
   attribute float customSize;
   attribute float customAngle;
   attribute float customVisible;
+
   varying vec4 vColor;
   varying float vAngle;
+  
   void main() {
     if ( customVisible > 0.5 ) {
       vColor = vec4( customColor, customOpacity );
@@ -21,6 +23,7 @@ const particleVertexShader = `
       vColor = vec4(0.0, 0.0, 0.0, 0.0);
     }
     vAngle = customAngle;
+
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
     gl_PointSize = customSize * ( 300.0 / length( mvPosition.xyz ) );
     gl_Position = projectionMatrix * mvPosition;
@@ -29,14 +32,16 @@ const particleVertexShader = `
 
 const particleFragmentShader = `
   uniform sampler2D customTexture;
+
   varying vec4 vColor;
   varying float vAngle;
+
   void main() {
-    gl_FragColor = vColor;
-    float c = cos(vAngle);
-    float s = sin(vAngle);
-    vec2 rotatedUV = vec2(c * (gl_PointCoord.x - 0.5) + s * (gl_PointCoord.y - 0.5) + 0.5, c * (gl_PointCoord.y - 0.5) - s * (gl_PointCoord.x - 0.5) + 0.5);
-    gl_FragColor = gl_FragColor * texture2D(customTexture, rotatedUV);
+    float cosValue = cos(vAngle);
+    float sinValue = sin(vAngle);
+    vec2 coord = gl_PointCoord.xy - vec2(0.5);
+    vec2 rotatedUV = vec2(cosValue * coord.x + sinValue * coord.y + 0.5, cosValue * coord.y - sinValue * coord.x + 0.5);
+    gl_FragColor = vColor * texture2D(customTexture, rotatedUV);
   }
 `
 
