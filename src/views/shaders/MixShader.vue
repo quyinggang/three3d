@@ -54,6 +54,7 @@ const createMesh = (width, height) => {
   `
   /**
    * mix是内置的线性混合函数，该函数在两个值之间进行线性插值，即lerp
+   * mix(x, y, a)：a值越大则意味着y占比越大
    */
   const fragmentShader = `
       uniform vec3 uStartColor;
