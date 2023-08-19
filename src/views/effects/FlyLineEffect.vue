@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
+import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const canvasElementRef = ref(null)
@@ -15,7 +16,7 @@ const createScene = () => {
 const createCamera = (aspect) => {
   // 透视投影摄像机
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000)
-  camera.position.set(0, 2, 6)
+  camera.position.set(2, 2, 10)
   // 设置摄像机方向
   camera.lookAt(0, 0, 0)
   return camera
@@ -38,28 +39,103 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
-const createMesh = () => {
+const getPoints = () => {
+  const points = [
+    new THREE.Vector3(-3, 0, 0),
+    new THREE.Vector3(0, 3, 0),
+    new THREE.Vector3(0, 0, 3),
+    new THREE.Vector3(0, 0, 6)
+  ]
+  const curve = new THREE.CatmullRomCurve3(points)
+  return curve.getSpacedPoints(100)
+}
+
+const applyTween = (geometry) => {
+  const points = getPoints()
+  const position = geometry.attributes.position
+  const tween = new TWEEN.Tween({ index: -3 }).to({ index: 100 }, 3000).delay(800).repeat(Infinity)
+  tween.onUpdate(({ index }) => {
+    const slicePoints = points.slice(index, index + 3)
+    if (slicePoints.length > 0) {
+      geometry.setFromPoints(slicePoints)
+      position.needsUpdate = true
+    }
+  })
+  tween.start()
+}
+
+// 截取曲线一段points绘制线段实现飞线
+const createMesh1 = () => {
+  const geometry = new THREE.BufferGeometry().setFromPoints([])
+  // 无法设置线段宽度
+  const material = new THREE.LineBasicMaterial({
+    color: '#FF0000'
+  })
+  const mesh = new THREE.Line(geometry, material)
+  return mesh
+}
+
+const getMesh2Points = () => {
+  const points = [
+    new THREE.Vector3(3, 0, -1),
+    new THREE.Vector3(3, 0, 3),
+    new THREE.Vector3(0, 3, 0),
+    new THREE.Vector3(0, 0, 6)
+  ]
+  const curve = new THREE.CatmullRomCurve3(points)
+  return curve.getSpacedPoints(1000)
+}
+const applyMesh2Tween = (material) => {
+  const tween = new TWEEN.Tween({ index: -10 })
+    .to({ index: 1010 }, 3000)
+    .delay(800)
+    .repeat(Infinity)
+  tween.onUpdate(({ index }) => {
+    material.uniforms.uTime.value = index
+  })
+  tween.start()
+}
+// shader上顶点着色器中截取一段线段显示，线段其他部分不显示实现飞线
+const createMesh2 = () => {
   // 逐顶点
   const vertexShader = `
+    attribute float aIndex;
+
+    uniform float uTime;
+
+    varying float vOpacity;
+
     void main() {
-      // 顶点坐标位置
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      bool isLine =  aIndex > uTime - 10.0 && aIndex < uTime + 10.0;
+      vOpacity = isLine ? 1.0 : 0.0;
+      gl_PointSize = isLine ? 0.2 * (80.0 / -mvPosition.z) : 0.0;
+      gl_Position = projectionMatrix * mvPosition;
     }
   `
   // 逐片元
   const fragmentShader = `
+    varying float vOpacity;
+
     void main() {
-      // 片元颜色
-      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      gl_FragColor = vec4(1.0, 0.0, 0.0, vOpacity);
     }
   `
+  const points = getMesh2Points()
+  const indexes = points.map((item, index) => index)
+  const geometry = new THREE.BufferGeometry().setFromPoints(points)
+  geometry.setAttribute('aIndex', new THREE.Float32BufferAttribute(indexes, 1))
+
   const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: {
+        value: 0.0
+      }
+    },
     vertexShader,
     fragmentShader
   })
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material)
-  mesh.position.set(-1, 0, 0)
-  return mesh
+  return new THREE.Points(geometry, material)
 }
 
 onMounted(() => {
@@ -73,11 +149,17 @@ onMounted(() => {
   const renderer = createWebGLRenderer(canvasElement, width, height)
   const controls = createControls(camera, renderer.domElement)
 
-  const mesh = createMesh()
-  scene.add(mesh)
+  const mesh1 = createMesh1()
+  applyTween(mesh1.geometry)
+  scene.add(mesh1)
+
+  const mesh2 = createMesh2()
+  applyMesh2Tween(mesh2.material)
+  scene.add(mesh2)
 
   const render = () => {
     controls.update()
+    TWEEN.update()
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
   }

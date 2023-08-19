@@ -221,6 +221,11 @@ const effectConfigList = [
     path: '/particleEffect',
     title: '粒子引擎应用',
     componentName: 'ParticleEffect'
+  },
+  {
+    path: '/flyLineEffect',
+    title: '飞线效果',
+    componentName: 'FlyLineEffect'
   }
 ]
 
