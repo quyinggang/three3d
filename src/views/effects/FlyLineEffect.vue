@@ -91,7 +91,7 @@ const applyMesh2Tween = (material) => {
     .delay(800)
     .repeat(Infinity)
   tween.onUpdate(({ index }) => {
-    material.uniforms.uTime.value = index
+    material.uniforms.uIndex.value = index
   })
   tween.start()
 }
@@ -101,13 +101,13 @@ const createMesh2 = () => {
   const vertexShader = `
     attribute float aIndex;
 
-    uniform float uTime;
+    uniform float uIndex;
 
     varying float vOpacity;
 
     void main() {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-      bool isLine =  aIndex > uTime - 10.0 && aIndex < uTime + 10.0;
+      bool isLine =  aIndex > uIndex - 10.0 && aIndex < uIndex + 10.0;
       vOpacity = isLine ? 1.0 : 0.0;
       gl_PointSize = isLine ? 0.2 * (80.0 / -mvPosition.z) : 0.0;
       gl_Position = projectionMatrix * mvPosition;
@@ -128,7 +128,7 @@ const createMesh2 = () => {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      uTime: {
+      uIndex: {
         value: 0.0
       }
     },
