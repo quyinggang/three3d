@@ -261,8 +261,9 @@ const createMaterial6 = () => {
         vec4 texture1 = texture2D(uTexture1, vUV);
         vec4 texture2 = texture2D(uTexture2, vUV);
         float time = abs(sin(uTime));
-        float smoothness = 0.01;
-        float progress = smoothstep(time - smoothness, time + smoothness, valueNoise(vUV * 10.0));
+        float progress = step(time, valueNoise(vUV * 10.0));
+        // float smoothness = 0.01;
+        // float progress = smoothstep(time - smoothness, time + smoothness, valueNoise(vUV * 10.0));
         gl_FragColor = mix(texture1, texture2, progress);
 			}
   `
