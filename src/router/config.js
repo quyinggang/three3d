@@ -100,6 +100,11 @@ const threeBasicConfigList = [
     path: '/flow',
     title: '纹理流动',
     componentName: 'FlowScene'
+  },
+  {
+    path: '/lineWidth',
+    title: '有宽度的线条',
+    componentName: 'LineWidthScene'
   }
 ]
 

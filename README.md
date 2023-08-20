@@ -21,6 +21,7 @@
 - 模型线框化的N种实现方法：主要学习模型线框化处理
 - 城市建筑模型加载：主要学习FBX模型文件加载、模型线框化处理
 - 纹理流动：主要学习纹理相关属性设置、TubeGeometry管道
+- 有宽度的线条：主要学习线条扩展API Line2等的基本使用
 
 - shader之基本组成：了解shader的最基本组成
 - shader之圆点粒子：主要学习gl_PointCoord、gl_PointSize、length内置函数
