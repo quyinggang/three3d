@@ -206,7 +206,7 @@ const shaderConfigList = [
   },
   {
     path: '/shaderVortex',
-    title: 'shader之旋涡效果',
+    title: 'shader之旋涡扭曲',
     componentName: 'VortexShader'
   },
   {

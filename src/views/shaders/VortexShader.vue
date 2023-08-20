@@ -65,7 +65,7 @@ const createMesh1 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(-1.5, 0, 0)
+  mesh.position.set(-1.5, 1, 0)
   return mesh
 }
 
@@ -106,7 +106,7 @@ const createMesh2 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(0, 0, 0)
+  mesh.position.set(0, 1, 0)
   return mesh
 }
 
@@ -148,7 +148,65 @@ const createMesh3 = () => {
     transparent: true
   })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1), material)
-  mesh.position.set(1.5, 0, 0)
+  mesh.position.set(1.5, 1, 0)
+  return mesh
+}
+
+const createMesh4 = () => {
+  const vertexShader = `
+      varying vec2 vUV;
+
+			void main() {
+        vUV = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+  `
+  const fragmentShader = `
+    uniform sampler2D uTexture;
+    uniform float uTime;
+
+    varying vec2 vUV;
+
+    const float PI = 3.1415926;
+
+    mat2 rotate2D(float rad) {
+      return mat2(cos(rad), -sin(rad), sin(rad), cos(rad));
+    }
+
+    vec2 twist(vec2 coord, vec2 center, float radius, float degree) {
+      vec2 position = coord - center;
+      float distance = length(position);
+      if (distance < radius) {
+        float percent = (radius - distance) / radius;
+        float value = ( degree <= 0.5 ) ? mix( 0.0, 1.0, degree / 0.5 ) : mix( 1.0, 0.0, (degree - 0.5) / 0.5 );
+        float theta = percent * percent * value * 8.0 * PI;
+        float sinValue = sin(theta);
+        float cosValue = cos(theta);
+        position = vec2(dot(position, vec2(cosValue, -sinValue)), dot(position, vec2(sinValue, cosValue)));
+      }
+      return position + center;
+    }
+
+    void main() {
+      vec2 newUV = twist(vUV, vec2(0.5), 1.0, abs(sin(uTime)));
+      gl_FragColor = texture2D(uTexture, newUV);
+    }
+  `
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uTexture: {
+        value: new THREE.TextureLoader().load('/src/assets/textures/other/color.jpg')
+      },
+      uTime: {
+        value: 0.0
+      }
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 2, 1), material)
+  mesh.position.set(0, -1, 0)
   return mesh
 }
 
@@ -171,15 +229,20 @@ onMounted(() => {
   const mesh3 = createMesh3()
   scene.add(mesh3)
 
+  const mesh4 = createMesh4()
+  scene.add(mesh4)
+
   const mesh1Uniforms = mesh1.material.uniforms
   const mesh2Uniforms = mesh2.material.uniforms
   const mesh3Uniforms = mesh3.material.uniforms
+  const mesh4Uniforms = mesh4.material.uniforms
   const clock = new THREE.Clock()
   const render = () => {
     const time = clock.getElapsedTime()
     mesh1Uniforms.uTime.value = time
     mesh2Uniforms.uTime.value = time
     mesh3Uniforms.uTime.value = time
+    mesh4Uniforms.uTime.value = time
 
     renderer.render(scene, camera)
     window.requestAnimationFrame(render)
