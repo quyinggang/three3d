@@ -231,6 +231,11 @@ const effectConfigList = [
     path: '/flyLineEffect',
     title: '飞线效果',
     componentName: 'FlyLineEffect'
+  },
+  {
+    path: '/transitionEffect',
+    title: '转场过渡',
+    componentName: 'TransitionEffect'
   }
 ]
 
