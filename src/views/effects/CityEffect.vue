@@ -67,21 +67,71 @@ const shaderUniformsCallbackList = []
  * shader中会存在#include <begin_vertex>等语句，这些事three定义的glsl，具体脚本内容查看three源码中renderer/shaders/shaderChunk下对应脚本文件
  * 而修改shader就是在对应的脚本语句后修改脚本或增加语句
  */
-const applyRiseShader = (shader) => {
-  shader.uniforms.progress = { value: 0 }
+const applyGrowShader = (shader) => {
+  shader.uniforms.uProgress = { value: 0 }
   shader.vertexShader = `
-    uniform float progress;
+    uniform float uProgress;
     ${shader.vertexShader}
   `
   shader.vertexShader = shader.vertexShader.replace(
     '#include <begin_vertex>',
     `
       #include <begin_vertex>
-      transformed.z = position.z * min(progress, 1.0);
+      transformed.z = position.z * min(uProgress, 1.0);
     `
   )
   shaderUniformsCallbackList.push((progress) => {
-    shader.uniforms.progress.value = progress
+    shader.uniforms.uProgress.value = progress
+  })
+}
+const applyRiseShader = (shader) => {
+  shader.uniforms.uRiseProgress = { value: 0 }
+  shader.uniforms.uRiseColor = { value: new THREE.Color('#87CEEB') }
+
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      varying vec3 vTransformedNormal;
+      varying float vHeight;
+    `
+  )
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <begin_vertex>',
+    `
+      #include <begin_vertex>
+      vTransformedNormal = normalize(normal);
+      vHeight = transformed.z;
+    `
+  )
+
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      uniform vec3 uRiseColor;
+      uniform float uRiseProgress;
+      varying float vHeight;
+      varying vec3 vTransformedNormal;
+      
+      vec3 riseLine() {
+        float smoothness = 1.8;
+        float speed = uRiseProgress * 30.0;
+        bool isTopBottom = (vTransformedNormal.z > 0.0 || vTransformedNormal.z < 0.0) && vTransformedNormal.x == 0.0 && vTransformedNormal.y == 0.0;
+        float ratio = isTopBottom ? 0.0 : smoothstep(speed, speed + smoothness, vHeight) - smoothstep(speed + smoothness, speed + smoothness * 2.0, vHeight);
+        return uRiseColor * ratio;
+      }
+    `
+  )
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <dithering_fragment>',
+    `
+      #include <dithering_fragment>
+      gl_FragColor = gl_FragColor + vec4(riseLine(), 1.0);
+    `
+  )
+  shaderUniformsCallbackList.push((progress) => {
+    shader.uniforms.uRiseProgress.value = progress
   })
 }
 
@@ -104,10 +154,11 @@ const modelHandlerMap = {
       material.transparent = true
       material.opacity = 0.9
       // 实现生长效果
+      applyGrowShader(shader)
       applyRiseShader(shader)
     }
     lienMaterial.onBeforeCompile = (shader) => {
-      applyRiseShader(shader)
+      applyGrowShader(shader)
     }
   },
   LANDMASS: (model) => {

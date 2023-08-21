@@ -243,9 +243,14 @@ const effectConfigList = [
     componentName: 'TransitionEffect'
   },
   {
-    path: '/cityRiseEffect',
+    path: '/cityGrowEffect',
     title: '城市建筑生长效果',
-    componentName: 'CityRiseEffect'
+    componentName: 'CityGrowEffect'
+  },
+  {
+    path: '/cityEffect',
+    title: '城市常见特效应用',
+    componentName: 'CityEffect'
   }
 ]
 
