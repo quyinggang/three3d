@@ -68,20 +68,20 @@ const shaderUniformsCallbackList = []
  * 而修改shader就是在对应的脚本语句后修改脚本或增加语句
  */
 const applyRiseShader = (shader) => {
-  shader.uniforms.uTime = { value: 0 }
+  shader.uniforms.progress = { value: 0 }
   shader.vertexShader = `
-    uniform float uTime;
+    uniform float progress;
     ${shader.vertexShader}
   `
   shader.vertexShader = shader.vertexShader.replace(
     '#include <begin_vertex>',
     `
       #include <begin_vertex>
-      transformed.z = position.z * min(uTime, 1.0);
+      transformed.z = position.z * min(progress, 1.0);
     `
   )
-  shaderUniformsCallbackList.push((time) => {
-    shader.uniforms.uTime.value = time
+  shaderUniformsCallbackList.push((progress) => {
+    shader.uniforms.progress.value = progress
   })
 }
 
