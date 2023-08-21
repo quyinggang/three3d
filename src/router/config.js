@@ -249,7 +249,7 @@ const effectConfigList = [
   },
   {
     path: '/cityEffect',
-    title: '城市常见特效应用',
+    title: '城市特效应用',
     componentName: 'CityEffect'
   }
 ]
