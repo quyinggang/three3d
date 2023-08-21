@@ -44,11 +44,10 @@ const createControls = (camera, domElement) => {
 const createMesh1 = () => {
   const vertexShader = `
       uniform float uTime;
-      uniform float uMaxSize;
 
 			void main() {
-        float y = position.y * uTime * 0.8 - uMaxSize;
-        vec3 newPosition = vec3(position.x, max(min(y, uMaxSize), -uMaxSize), position.z);
+        float y = min(uTime * 0.8 - position.y, position.y);
+        vec3 newPosition = vec3(position.x, y, position.z);
 				gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 			}
   `
@@ -63,10 +62,6 @@ const createMesh1 = () => {
     uniforms: {
       uColor: {
         value: new THREE.Color('#00FFFF')
-      },
-      // 几何体坐标最大值
-      uMaxSize: {
-        value: 1.0
       },
       uTime: {
         value: 0.0
