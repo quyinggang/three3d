@@ -183,6 +183,53 @@ const applySpreadShader = (shader) => {
     shader.uniforms.uSpreadTime.value = time * 200.0
   })
 }
+// 扫光
+const applySweepShader = (shader) => {
+  shader.uniforms.uSweepTime = { value: 0 }
+  shader.uniforms.uSweepColor = { value: new THREE.Color('#00FFFF') }
+
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      varying vec2 vSweepPosition;
+    `
+  )
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <begin_vertex>',
+    `
+      #include <begin_vertex>
+      vSweepPosition = vec2(position.x, position.y);
+    `
+  )
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      uniform vec3 uSweepColor;
+      uniform float uSweepTime;
+      varying vec2 vSweepPosition;
+      
+      vec3 sweep() {
+        vec2 center = vec2(0.0);
+        float smoothness = 60.0;
+        float start = mod(uSweepTime, 1800.0) - 800.0;
+        float ratio = smoothstep(start, start + smoothness, vSweepPosition.x) - smoothstep(start + smoothness, start + smoothness * 2.0, vSweepPosition.x);
+        return uSweepColor * ratio;
+      }
+    `
+  )
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <dithering_fragment>',
+    `
+      #include <dithering_fragment>
+      gl_FragColor = gl_FragColor + vec4(sweep(), 1.0);
+    `
+  )
+  shaderUniformsCallbackList.push((time) => {
+    shader.uniforms.uSweepTime.value = time * 160.0
+  })
+}
 
 const modelHandlerMap = {
   CITY_UNTRIANGULATED: (model, group) => {
@@ -206,6 +253,7 @@ const modelHandlerMap = {
       applyGrowShader(shader)
       applyRiseShader(shader)
       applySpreadShader(shader)
+      applySweepShader(shader)
     }
     lienMaterial.onBeforeCompile = (shader) => {
       applyGrowShader(shader)
