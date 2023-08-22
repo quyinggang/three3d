@@ -84,8 +84,9 @@ const applyGrowShader = (shader) => {
     shader.uniforms.uProgress.value = progress
   })
 }
+// 建筑表面流动上升效果
 const applyRiseShader = (shader) => {
-  shader.uniforms.uRiseProgress = { value: 0 }
+  shader.uniforms.uRiseTime = { value: 0 }
   shader.uniforms.uRiseColor = { value: new THREE.Color('#87CEEB') }
 
   shader.vertexShader = shader.vertexShader.replace(
@@ -110,13 +111,13 @@ const applyRiseShader = (shader) => {
     `
       #include <common>
       uniform vec3 uRiseColor;
-      uniform float uRiseProgress;
+      uniform float uRiseTime;
       varying float vHeight;
       varying vec3 vTransformedNormal;
       
       vec3 riseLine() {
         float smoothness = 1.8;
-        float speed = uRiseProgress * 30.0;
+        float speed = uRiseTime;
         bool isTopBottom = (vTransformedNormal.z > 0.0 || vTransformedNormal.z < 0.0) && vTransformedNormal.x == 0.0 && vTransformedNormal.y == 0.0;
         float ratio = isTopBottom ? 0.0 : smoothstep(speed, speed + smoothness, vHeight) - smoothstep(speed + smoothness, speed + smoothness * 2.0, vHeight);
         return uRiseColor * ratio;
@@ -130,8 +131,56 @@ const applyRiseShader = (shader) => {
       gl_FragColor = gl_FragColor + vec4(riseLine(), 1.0);
     `
   )
-  shaderUniformsCallbackList.push((progress) => {
-    shader.uniforms.uRiseProgress.value = progress
+  shaderUniformsCallbackList.push((time) => {
+    shader.uniforms.uRiseTime.value = time * 30.0
+  })
+}
+// 扩散波效果
+const applySpreadShader = (shader) => {
+  shader.uniforms.uSpreadTime = { value: 0 }
+  shader.uniforms.uSpreadColor = { value: new THREE.Color('#9932CC') }
+
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      varying vec2 vTransformedPosition;
+    `
+  )
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <begin_vertex>',
+    `
+      #include <begin_vertex>
+      vTransformedPosition = vec2(position.x, position.y);
+    `
+  )
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <common>',
+    `
+      #include <common>
+      uniform vec3 uSpreadColor;
+      uniform float uSpreadTime;
+      varying vec2 vTransformedPosition;
+      
+      vec3 spread() {
+        vec2 center = vec2(0.0);
+        float smoothness = 60.0;
+        float start = mod(uSpreadTime, 1800.0);
+        float distance = length(vTransformedPosition - center);
+        float ratio = smoothstep(start, start + smoothness, distance) - smoothstep(start + smoothness, start + smoothness * 2.0, distance);
+        return uSpreadColor * ratio;
+      }
+    `
+  )
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <dithering_fragment>',
+    `
+      #include <dithering_fragment>
+      gl_FragColor = gl_FragColor + vec4(spread(), 1.0);
+    `
+  )
+  shaderUniformsCallbackList.push((time) => {
+    shader.uniforms.uSpreadTime.value = time * 200.0
   })
 }
 
@@ -156,6 +205,7 @@ const modelHandlerMap = {
       // 实现生长效果
       applyGrowShader(shader)
       applyRiseShader(shader)
+      applySpreadShader(shader)
     }
     lienMaterial.onBeforeCompile = (shader) => {
       applyGrowShader(shader)
