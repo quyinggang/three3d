@@ -22,6 +22,7 @@
 - 城市建筑模型加载：主要学习FBX模型文件加载、模型线框化处理
 - 纹理流动：主要学习纹理相关属性设置、TubeGeometry管道
 - 有宽度的线条：主要学习线条扩展API Line2等的基本使用
+- 人物运动控制：主要学习人物模型控制、不同动作之间动画切换等
 
 - shader之基本组成：了解shader的最基本组成
 - shader之圆点粒子：主要学习gl_PointCoord、gl_PointSize、length内置函数

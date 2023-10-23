@@ -105,6 +105,11 @@ const threeBasicConfigList = [
     path: '/lineWidth',
     title: '有宽度的线条',
     componentName: 'LineWidthScene'
+  },
+  {
+    path: '/animation',
+    title: '人物运动控制',
+    componentName: 'AnimationScene'
   }
 ]
 

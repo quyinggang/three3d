@@ -14,6 +14,9 @@ dependencies:
   dat.gui:
     specifier: ^0.7.9
     version: registry.npmmirror.com/dat.gui@0.7.9
+  nipplejs:
+    specifier: ^0.10.1
+    version: registry.npmmirror.com/nipplejs@0.10.1
   three:
     specifier: ^0.154.0
     version: registry.npmmirror.com/three@0.154.0
@@ -1626,6 +1629,12 @@ packages:
     name: natural-compare
     version: 1.4.0
     dev: true
+
+  registry.npmmirror.com/nipplejs@0.10.1:
+    resolution: {integrity: sha512-BuKBDfdd7BVK6E7sivHwrRPh9TETsHuHEwuT95nAjRz2uJu5roYngNs+BdRe8nYf8mP6OZ9aRqdgMlqVsDMRcw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/nipplejs/-/nipplejs-0.10.1.tgz}
+    name: nipplejs
+    version: 0.10.1
+    dev: false
 
   registry.npmmirror.com/normalize-path@1.0.0:
     resolution: {integrity: sha512-7WyT0w8jhpDStXRq5836AMmihQwq2nrUVQrgjvUo/p/NZf9uy/MeJ246lBJVmWuYXMlJuG9BNZHF0hWjfTbQUA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/normalize-path/-/normalize-path-1.0.0.tgz}
