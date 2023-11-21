@@ -320,7 +320,7 @@ const createMesh5 = () => {
             vec2 origin = vec2(x, y);
             vec2 offset = random2D(intPos + origin);
             // 通过时间动态变更偏移量
-            offset += sin(offset * uTime) * 0.5;
+            offset += sin(offset * time) * 0.5;
             float distance = length(origin + offset - fractPos);
             dist = min(dist, distance);
           }
