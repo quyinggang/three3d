@@ -4,11 +4,12 @@
  * - 外发光效果纹理方式实现
  * - size更改实现闪烁效果
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { generateRandomXYZ, generateRandomColor } from '@/tools/util'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -127,11 +128,13 @@ onMounted(() => {
     }
     sizeBufferAttribute.needsUpdate = true
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
 
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

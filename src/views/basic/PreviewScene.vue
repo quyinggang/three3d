@@ -6,7 +6,7 @@
  * - 渲染目标对象
  * - 帧缓冲纹理对象
  */
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { generateRandomColor } from '@/tools/util'
@@ -354,6 +354,8 @@ onMounted(() => {
     }
   )
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

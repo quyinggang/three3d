@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -157,11 +158,13 @@ onMounted(() => {
 
     controls.update()
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
 
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

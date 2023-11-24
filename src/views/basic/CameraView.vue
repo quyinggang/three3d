@@ -5,12 +5,13 @@
  * - 曲线getPointAt、getTangentAt方法
  * - lookAt
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 const cameraViewRef = ref(0)
+let raf = null
 
 const createCurvePath = () => {
   const group = new THREE.Group()
@@ -140,10 +141,12 @@ onMounted(() => {
   const render = () => {
     updatePositionLookAt()
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

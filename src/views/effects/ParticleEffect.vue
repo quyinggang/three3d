@@ -9,6 +9,7 @@ import * as dat from 'dat.gui'
 import { ParticleEngine, ParticleType, Tween } from '@/libs/ParticleEngine.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -314,7 +315,7 @@ onMounted(() => {
     controls.update()
     particleEngine && particleEngine.update(delta * 0.5)
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
 
   const group = new THREE.Group()
@@ -326,6 +327,7 @@ onMounted(() => {
 
   onBeforeUnmount(() => {
     destroyDataGUI()
+    window.cancelAnimationFrame(raf)
   })
 })
 </script>

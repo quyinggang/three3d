@@ -5,11 +5,12 @@
  * - 动态变换模型position属性
  * - 粒子变换逻辑
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -112,11 +113,13 @@ onMounted(() => {
     // 粒子坐标数据被更改，需要更新
     box.geometry.attributes.position.needsUpdate = true
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   switchToOtherShape(box, sphere)
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

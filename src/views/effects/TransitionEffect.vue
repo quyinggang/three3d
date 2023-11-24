@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -348,12 +349,13 @@ onMounted(() => {
     mesh.material.uniforms.uTime.value = elapsedTime
 
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 
   onBeforeUnmount(() => {
     removeDataGUI()
+    window.cancelAnimationFrame(raf)
   })
 })
 </script>

@@ -4,11 +4,12 @@
  * - 裁剪测试Scissor Test
  * - viewport视口范围定义
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { generateRandomColor } from '@/tools/util'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -116,11 +117,13 @@ onMounted(() => {
     renderer.setViewport(rightSize.x, rightSize.y, rightSize.width, rightSize.height)
     renderer.render(scene, rightCamera)
 
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
 
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

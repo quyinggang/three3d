@@ -17,6 +17,7 @@ import { generateRandomColor } from '@/tools/util'
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 const size = 64
+let raf = null
 
 const createEffectComposer = (scene, camera, renderer) => {
   const bloomComposer = new EffectComposer(renderer)
@@ -179,13 +180,14 @@ onMounted(() => {
         mesh.scale.y = value
       })
     }
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 
   onBeforeUnmount(() => {
     stopAudioPlay()
     removeClickEvent()
+    window.cancelAnimationFrame(raf)
   })
 })
 </script>

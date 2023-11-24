@@ -10,6 +10,7 @@ import * as d3 from 'd3-geo'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { transform3DTo2D } from '@/tools/util'
 
+let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 
@@ -163,12 +164,13 @@ onMounted(() => {
   const render = () => {
     controls.update()
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 
   onBeforeUnmount(() => {
     removeListenerEvent()
+    window.cancelAnimationFrame(raf)
   })
 })
 </script>

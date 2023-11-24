@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Home from '@/Home.vue'
+import Layout from '@/layouts/default.vue'
 import configList from './config'
 import { TYPE_PATH_ALIAS } from '@/tools/constants'
 
@@ -19,10 +19,10 @@ configList.forEach((config) => {
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
-  },
-  ...routerList
+    component: Layout,
+    redirect: routerList[0].path,
+    children: [...routerList]
+  }
 ]
 
 export default createRouter({

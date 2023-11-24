@@ -12,6 +12,7 @@ import { Flow } from 'three/addons/modifiers/CurveModifier.js'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
+let raf = null
 
 const createCurvePath = () => {
   const group = new THREE.Group()
@@ -143,11 +144,12 @@ onMounted(() => {
     // 运动速率
     flow && flow.moveAlongCurve(0.002)
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
   onBeforeUnmount(() => {
     removeClickEvent()
+    window.cancelAnimationFrame(raf)
   })
 })
 </script>

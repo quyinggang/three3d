@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import nipplejs from 'nipplejs'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
@@ -7,6 +7,7 @@ import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
+let raf = null
 
 const createGround = () => {
   const group = new THREE.Group()
@@ -153,10 +154,12 @@ onMounted(() => {
     }
 
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

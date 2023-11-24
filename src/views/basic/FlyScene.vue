@@ -7,10 +7,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import Stats from 'three/addons/libs/stats.module.js'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
+let raf = null
 
 const range = 50
 
@@ -134,19 +134,6 @@ const createControls = (camera, domElement) => {
   return controls
 }
 
-const createStats = () => {
-  const stats = new Stats()
-  stats.domElement.style.position = 'absolute'
-  stats.domElement.style.left = '0px'
-  stats.domElement.style.top = '0px'
-
-  document.body.appendChild(stats.domElement)
-  const effect = () => {
-    document.body.removeChild(stats.domElement)
-  }
-  return [stats, effect]
-}
-
 onMounted(() => {
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
@@ -157,7 +144,6 @@ onMounted(() => {
   const camera = createCamera(width / height)
   const renderer = createWebGLRenderer(canvasElement, width, height)
   const controls = createControls(camera, renderer.domElement)
-  const [stats, removeStatsNode] = createStats()
 
   // 地面
   const ground = createGround()
@@ -204,17 +190,14 @@ onMounted(() => {
       fireflyGroup.geometry.attributes.customData.needsUpdate = true
     }
     controls.update()
-    stats.update()
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
 
   render()
-
-  onBeforeUnmount(() => {
-    removeStatsNode()
-  })
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

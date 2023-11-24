@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
+let raf = null
 
 const getMesh = () => {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
@@ -69,10 +70,12 @@ onMounted(() => {
   const render = () => {
     controls.update()
     renderer.render(scene, camera)
-    window.requestAnimationFrame(render)
+    raf = window.requestAnimationFrame(render)
   }
   render()
 })
+
+onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>
