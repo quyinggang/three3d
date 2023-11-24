@@ -6,7 +6,7 @@
  * - 渲染器和深度缓冲区
  * - ShaderPass自定义后处理逻辑，实现将两个渲染画面混合
  */
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
@@ -216,7 +216,7 @@ onMounted(() => {
   let render = () => {}
 
   // 切换方案
-  watch(
+  const removeWatch = watch(
     currentSchemeId,
     (value) => {
       boxModel.layers.set(1 - value)
@@ -231,6 +231,22 @@ onMounted(() => {
   )
 
   controls.addEventListener('change', () => render())
+
+  onBeforeUnmount(() => {
+    removeWatch()
+    renderer.dispose()
+    renderer.forceContextLoss()
+    scene.traverse((obj) => {
+      if (obj instanceof THREE.Object3D) {
+        const { geometry, material } = obj
+        geometry && geometry.dispose()
+        const materials = Array.isArray(material) ? material : [material]
+        for (const item of materials) {
+          item && item.dispose()
+        }
+      }
+    })
+  })
 })
 </script>
 

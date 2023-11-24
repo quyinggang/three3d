@@ -132,8 +132,23 @@ onMounted(() => {
   }
 
   render()
+
+  onBeforeUnmount(() => {
+    renderer.dispose()
+    renderer.forceContextLoss()
+    scene.traverse((obj) => {
+      if (obj instanceof THREE.Object3D) {
+        const { geometry, material } = obj
+        geometry && geometry.dispose()
+        const materials = Array.isArray(material) ? material : [material]
+        for (const item of materials) {
+          item && item.dispose()
+        }
+      }
+    })
+    window.cancelAnimationFrame(raf)
+  })
 })
-onBeforeUnmount(() => window.cancelAnimationFrame(raf))
 </script>
 
 <template>

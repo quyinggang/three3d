@@ -33,6 +33,17 @@ const createPreviewCanvas = () => {
   return previewCanvas
 }
 
+const createWebGLRenderer = (canvasElement, width, height) => {
+  // 渲染器
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasElement,
+    antialias: true
+  })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  return renderer
+}
+
 const createBasic = (width, height) => {
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
@@ -62,6 +73,7 @@ const applyCanvasScheme = (width, height, renderer, previewCanvas) => {
   const previewHeight = previewCanvas.height
   const renderPreviewImage = () => {
     const image = new Image()
+    // 会有严重的性能问题
     const base64Image = domElement.toDataURL()
     image.onload = () => {
       context.drawImage(image, 0, 0, previewWidth, previewHeight)
@@ -85,6 +97,7 @@ const applyCanvasScheme = (width, height, renderer, previewCanvas) => {
  * 缺点：
  * - 借助RenderTarget，整个场景需要渲染两次
  * - 读取RenderTarget像素到视口，整个过程相对繁琐
+ * - 会有严重的性能问题
  */
 const applyRenderTargetScheme = (width, height, renderer, previewCanvas) => {
   const { scene, camera } = createBasic(width, height)
@@ -131,6 +144,7 @@ const applyRenderTargetScheme = (width, height, renderer, previewCanvas) => {
 
     renderer.setRenderTarget(null)
     renderer.render(scene, camera)
+
     raf = window.requestAnimationFrame(render)
   }
   render()
@@ -296,12 +310,12 @@ const handleSchemeSwitch = () => {
 }
 
 const schemeMap = {
-  1: (width, height, renderer, containerElement) => {
+  5: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
     applyCanvasScheme(width, height, renderer, previewCanvas)
   },
-  2: (width, height, renderer, containerElement) => {
+  4: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
     applyRenderTargetScheme(width, height, renderer, previewCanvas)
@@ -309,10 +323,10 @@ const schemeMap = {
   3: (width, height, renderer) => {
     applyFrameBufferTextureDataScheme(width, height, renderer)
   },
-  4: (width, height, renderer) => {
+  2: (width, height, renderer) => {
     applyViewportScheme(width, height, renderer)
   },
-  5: (width, height, renderer, containerElement) => {
+  1: (width, height, renderer, containerElement) => {
     const previewCanvas = createPreviewCanvas()
     containerElement.appendChild(previewCanvas)
     applyMultipleRenderScheme(width, height, renderer, previewCanvas)
@@ -325,21 +339,10 @@ onMounted(() => {
   const width = containerElement.clientWidth
   const height = containerElement.clientHeight
 
-  // 渲染器
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasElement,
-    antialias: true
-  })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-
   const clearBeforeSwitchScheme = () => {
     const preview = document.getElementById('preview')
     preview && containerElement.removeChild(preview)
     raf && window.cancelAnimationFrame(raf)
-    // 清除渲染器状态
-    renderer.autoClear = true
-    renderer.resetState()
   }
 
   watch(
@@ -347,7 +350,11 @@ onMounted(() => {
     (value) => {
       clearBeforeSwitchScheme()
       const handler = schemeMap[value]
-      handler && handler(width, height, renderer, containerElement)
+      if (handler) {
+        // 切换不同方案渲染器存在一些问题，这里简单处理每次新建新的渲染器
+        const renderer = createWebGLRenderer(canvasElement, width, height)
+        handler(width, height, renderer, containerElement)
+      }
     },
     {
       immediate: true

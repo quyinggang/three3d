@@ -29,7 +29,7 @@ watch(
           :key="item.path"
           :class="['item', routePath === item.path ? 'active' : '']"
         >
-          <router-link :to="item.path">
+          <router-link class="link" :to="item.path">
             {{ item.title }}
           </router-link>
         </li>
@@ -84,6 +84,12 @@ watch(
 
 .menu .item.active {
   color: #409eff;
+}
+
+.menu .link {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .main {
