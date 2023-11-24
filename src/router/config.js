@@ -233,6 +233,11 @@ const shaderConfigList = [
     path: '/shaderNoiseShape',
     title: 'shader之噪声扰动',
     componentName: 'NoiseShader2'
+  },
+  {
+    path: '/shaderToy',
+    title: 'shader之shaderToy',
+    componentName: 'ShaderToy'
   }
 ]
 
