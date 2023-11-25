@@ -10,6 +10,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { CSS3DSprite, CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { generateRandomColor } from '@/tools/util'
+import labelAssets from '@/assets/textures/label/text-image.jpg'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -63,7 +64,7 @@ const createSpriteLabel = (position) => {
   group.add(line)
 
   const material = new THREE.SpriteMaterial({
-    map: new THREE.TextureLoader().load('src/assets/textures/label/text-image.jpg')
+    map: new THREE.TextureLoader().load(labelAssets)
   })
   const sprite = new THREE.Sprite(material)
   sprite.scale.set(0.6, 0.3, 1)

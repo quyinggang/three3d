@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import nipplejs from 'nipplejs'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
+import soldierAssets from '@/assets/models/Soldier.glb?url'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -81,7 +82,7 @@ onMounted(() => {
   lights.forEach((light) => scene.add(light))
 
   const loader = new GLTFLoader()
-  loader.load('src/assets/models/Soldier.glb', (gltf) => {
+  loader.load(soldierAssets, (gltf) => {
     const animations = gltf.animations
     box = SkeletonUtils.clone(gltf.scene)
 

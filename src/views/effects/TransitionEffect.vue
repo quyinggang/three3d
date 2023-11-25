@@ -2,6 +2,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
+import gmleiAssets from '@/assets/textures/other/gmlei.png'
+import gmhuoAssets from '@/assets/textures/other/gmhuo.png'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -59,8 +61,8 @@ const createMaterial = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,
@@ -98,8 +100,8 @@ const createMaterial2 = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,
@@ -135,8 +137,8 @@ const createMaterial3 = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,
@@ -172,8 +174,8 @@ const createMaterial4 = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,
@@ -211,8 +213,8 @@ const createMaterial5 = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,
@@ -271,8 +273,8 @@ const createMaterial6 = () => {
   const textureLoader = new THREE.TextureLoader()
   return new THREE.ShaderMaterial({
     uniforms: {
-      uTexture1: { value: textureLoader.load('/src/assets/textures/other/gmlei.png') },
-      uTexture2: { value: textureLoader.load('/src/assets/textures/other/gmhuo.png') },
+      uTexture1: { value: textureLoader.load(gmleiAssets) },
+      uTexture2: { value: textureLoader.load(gmhuoAssets) },
       uTime: { value: 0.0 }
     },
     vertexShader,

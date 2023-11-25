@@ -2,6 +2,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import arrowAssets from '@/assets/textures/other/arrow.png'
+import videoSource from '@/assets/video/gm.mp4'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -110,7 +112,7 @@ const createMesh2 = () => {
       gl_FragColor = texture2D(uTexture, point);
     }
   `
-  const texture = new THREE.TextureLoader().load('/src/assets/textures/other/arrow.png')
+  const texture = new THREE.TextureLoader().load(arrowAssets)
   texture.wrapS = THREE.RepeatWrapping
   texture.wrapT = THREE.RepeatWrapping
   texture.repeat.set(32, 2)
@@ -193,7 +195,7 @@ onMounted(() => {
 <template>
   <div ref="containerElementRef" class="container">
     <video id="video" loop crossOrigin="anonymous" playsinline>
-      <source src="/src/assets/video/gm.mp4" />
+      <source :src="videoSource" />
     </video>
     <canvas ref="canvasElementRef"></canvas>
   </div>

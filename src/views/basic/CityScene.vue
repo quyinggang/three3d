@@ -8,6 +8,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js'
+import shanghaiAssets from '@/assets/models/shanghai.FBX?url'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -61,7 +62,7 @@ const createLights = () => {
 
 const loadCityModels = (onLoaded) => {
   const fbxLoader = new FBXLoader()
-  fbxLoader.load('/src/assets/models/shanghai.FBX', (group) => {
+  fbxLoader.load(shanghaiAssets, (group) => {
     onLoaded && onLoaded(group)
   })
 }

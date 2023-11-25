@@ -8,6 +8,11 @@ import * as THREE from 'three'
 import * as dat from 'dat.gui'
 import { ParticleEngine, ParticleType, Tween } from '@/libs/ParticleEngine.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import spikeyAssets from '@/assets/textures/sprites/spikey.png'
+import smokeparticleAssets from '@/assets/textures/sprites/smokeparticle.png'
+import snowflakeAssets from '@/assets/textures/sprites/snowflake.png'
+import raindrop2flipAssets from '@/assets/textures/sprites/raindrop2flip.png'
+import sparkAssets from '@/assets/textures/sprites/spark.png'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -15,7 +20,6 @@ const containerElementRef = ref(null)
 
 let particleEngine = null
 const textureLoader = new THREE.TextureLoader()
-textureLoader.setPath('/src/assets/textures/sprites/')
 const particleExamples = {
   starfield: {
     positionStyle: ParticleType.CUBE,
@@ -31,7 +35,7 @@ const particleExamples = {
     angleVelocityBase: 0,
     angleVelocitySpread: 4,
 
-    particleTexture: textureLoader.load('spikey.png'),
+    particleTexture: textureLoader.load(spikeyAssets),
 
     sizeBase: 10.0,
     sizeSpread: 2.0,
@@ -52,7 +56,7 @@ const particleExamples = {
     speedBase: 40,
     speedSpread: 8,
 
-    particleTexture: textureLoader.load('smokeparticle.png'),
+    particleTexture: textureLoader.load(smokeparticleAssets),
 
     sizeTween: new Tween([0, 0.1], [1, 150]),
     opacityTween: new Tween([0.7, 1], [1, 0]),
@@ -72,7 +76,7 @@ const particleExamples = {
     velocityBase: new THREE.Vector3(0, 150, 0),
     velocitySpread: new THREE.Vector3(80, 50, 80),
     accelerationBase: new THREE.Vector3(0, -10, 0),
-    particleTexture: textureLoader.load('smokeparticle.png'),
+    particleTexture: textureLoader.load(smokeparticleAssets),
 
     angleBase: 0,
     angleSpread: 720,
@@ -96,7 +100,7 @@ const particleExamples = {
     velocityBase: new THREE.Vector3(40, 0, 0),
     velocitySpread: new THREE.Vector3(20, 0, 0),
 
-    particleTexture: textureLoader.load('smokeparticle.png'),
+    particleTexture: textureLoader.load(smokeparticleAssets),
 
     sizeBase: 80.0,
     sizeSpread: 100.0,
@@ -122,7 +126,7 @@ const particleExamples = {
     angleVelocityBase: 0,
     angleVelocitySpread: 60,
 
-    particleTexture: textureLoader.load('snowflake.png'),
+    particleTexture: textureLoader.load(snowflakeAssets),
 
     sizeTween: new Tween([0, 0.25], [1, 10]),
     colorBase: new THREE.Vector3(0.66, 1.0, 0.9), // H,S,L
@@ -142,7 +146,7 @@ const particleExamples = {
     velocitySpread: new THREE.Vector3(10, 50, 10),
     accelerationBase: new THREE.Vector3(0, -10, 0),
 
-    particleTexture: textureLoader.load('raindrop2flip.png'),
+    particleTexture: textureLoader.load(raindrop2flipAssets),
 
     sizeBase: 8.0,
     sizeSpread: 4.0,
@@ -163,7 +167,7 @@ const particleExamples = {
     velocityBase: new THREE.Vector3(0, 0, 0),
     velocitySpread: new THREE.Vector3(60, 20, 60),
 
-    particleTexture: textureLoader.load('spark.png'),
+    particleTexture: textureLoader.load(sparkAssets),
 
     sizeBase: 40.0,
     sizeSpread: 6.0,
@@ -189,7 +193,7 @@ const particleExamples = {
 
     accelerationBase: new THREE.Vector3(0, -80, 0),
 
-    particleTexture: textureLoader.load('spark.png'),
+    particleTexture: textureLoader.load(sparkAssets),
 
     sizeTween: new Tween([0.5, 0.7, 1.3], [5, 40, 1]),
     opacityTween: new Tween([0.2, 0.7, 2.5], [0.75, 1, 0]),
@@ -212,7 +216,7 @@ const particleExamples = {
     velocityBase: new THREE.Vector3(0, 100, 0),
     velocitySpread: new THREE.Vector3(20, 0, 20),
 
-    particleTexture: textureLoader.load('smokeparticle.png'),
+    particleTexture: textureLoader.load(smokeparticleAssets),
 
     sizeTween: new Tween([0, 0.3, 1.2], [20, 150, 1]),
     opacityTween: new Tween([0.9, 1.5], [1, 0]),

@@ -6,6 +6,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import earthAssets from '@/assets/textures/earth/land_ocean_ice_cloud_2048.jpg'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -50,7 +51,7 @@ const createEarth = () => {
   const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(100, 64, 64),
     new THREE.MeshBasicMaterial({
-      map: textureLoader.load('/src/assets/textures/earth/land_ocean_ice_cloud_2048.jpg')
+      map: textureLoader.load(earthAssets)
     })
   )
   return sphere

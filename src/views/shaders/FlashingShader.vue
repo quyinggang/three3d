@@ -8,6 +8,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { generateRandomXYZ, generateRandomColor } from '@/tools/util'
+import sparkAssets from '@/assets/textures/sprites/spark.png'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -72,7 +73,7 @@ const createShaderMaterial = () => {
     uniforms: {
       color: { value: new THREE.Color(0xffffff) },
       pointTexture: {
-        value: new THREE.TextureLoader().load('/src/assets/textures/sprites/spark.png')
+        value: new THREE.TextureLoader().load(sparkAssets)
       }
     },
     vertexShader,

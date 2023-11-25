@@ -9,6 +9,7 @@ import * as THREE from 'three'
 import * as d3 from 'd3-geo'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { transform3DTo2D } from '@/tools/util'
+import chinaJson from '@/assets/json/china.json?url'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -48,7 +49,7 @@ const createControls = (camera, domElement) => {
 
 const loadChinaMapJson = (onLoaded) => {
   const loader = new THREE.FileLoader()
-  loader.load('/src/assets/json/china.json', (data) => {
+  loader.load(chinaJson, (data) => {
     const object = JSON.parse(data)
     onLoaded && onLoaded(object)
   })

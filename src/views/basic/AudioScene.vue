@@ -13,6 +13,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { generateRandomColor } from '@/tools/util'
+import fearlessAssets from '@/assets/mp3/fearless.mp3'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -117,7 +118,7 @@ const loadAssets = (onLoaded) => {
   let audioAnalyser = null
   const audioLoader = new THREE.AudioLoader()
   audioLoader.load(
-    'src/assets/mp3/fearless.mp3',
+    fearlessAssets,
     function (buffer) {
       const listener = new THREE.AudioListener()
       // 位置相关的音频对象

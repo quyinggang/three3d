@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import arrowAssets from '@/assets/textures/other/arrow.png'
 
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
@@ -53,7 +54,7 @@ const createMesh = () => {
   // 创建一个沿着三维曲线延伸的管道，这里调整参数生成存在宽度的曲线平面，类似道路效果
   const geometry = new THREE.TubeGeometry(curve, 64, 0.5, 2, false)
 
-  const texture = new THREE.TextureLoader().load('/src/assets/textures/other/arrow.png')
+  const texture = new THREE.TextureLoader().load(arrowAssets)
   texture.wrapS = THREE.RepeatWrapping
   texture.wrapT = THREE.RepeatWrapping
   texture.repeat.set(16, 2)

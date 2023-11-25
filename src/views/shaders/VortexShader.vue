@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
+import colorAssets from '@/assets/textures/other/color.jpg'
 
 let raf = null
 const canvasElementRef = ref(null)
@@ -196,7 +197,7 @@ const createMesh4 = () => {
   const material = new THREE.ShaderMaterial({
     uniforms: {
       uTexture: {
-        value: new THREE.TextureLoader().load('/src/assets/textures/other/color.jpg')
+        value: new THREE.TextureLoader().load(colorAssets)
       },
       uTime: {
         value: 0.0

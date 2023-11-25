@@ -7,19 +7,18 @@
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import pxAssets from '@/assets/textures/cube/px.png'
+import nxAssets from '@/assets/textures/cube/nx.png'
+import pyAssets from '@/assets/textures/cube/py.png'
+import nyAssets from '@/assets/textures/cube/ny.png'
+import pzAssets from '@/assets/textures/cube/pz.png'
+import nzAssets from '@/assets/textures/cube/nz.png'
 
 let raf = null
 const canvasElementRef = ref(null)
 const containerElementRef = ref(null)
 const schemeIdRef = ref(0)
-const images = [
-  '/src/assets/textures/cube/px.png',
-  '/src/assets/textures/cube/nx.png',
-  '/src/assets/textures/cube/py.png',
-  '/src/assets/textures/cube/ny.png',
-  '/src/assets/textures/cube/pz.png',
-  '/src/assets/textures/cube/nz.png'
-]
+const images = [pxAssets, nxAssets, pyAssets, nyAssets, pzAssets, nzAssets]
 
 // 方案一：使用立方体+贴图
 const createCubeScheme = () => {
