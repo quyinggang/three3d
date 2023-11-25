@@ -138,30 +138,30 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
-const createCSS2DRenderer = (width, height) => {
+const createCSS2DRenderer = (element, width, height) => {
   // CSS2D渲染器
   const label2DRenderer = new CSS2DRenderer()
   const domElement = label2DRenderer.domElement
   label2DRenderer.setSize(width, height)
   domElement.style.position = 'absolute'
   domElement.style.top = '0px'
-  document.body.appendChild(domElement)
+  element.appendChild(domElement)
   const effect = () => {
-    document.body.removeChild(domElement)
+    element.removeChild(domElement)
   }
   return [label2DRenderer, effect]
 }
 
-const createCSS3DRenderer = (width, height) => {
+const createCSS3DRenderer = (element, width, height) => {
   // CSS3D渲染器
   const label3DRenderer = new CSS3DRenderer()
   const domElement = label3DRenderer.domElement
   label3DRenderer.setSize(width, height)
   domElement.style.position = 'absolute'
   domElement.style.top = '0px'
-  document.body.appendChild(domElement)
+  element.appendChild(domElement)
   const effect = () => {
-    document.body.removeChild(domElement)
+    element.removeChild(domElement)
   }
   return [label3DRenderer, effect]
 }
@@ -175,8 +175,16 @@ onMounted(() => {
   const scene = createScene()
   const camera = createCamera(width / height)
   const renderer = createWebGLRenderer(canvasElement, width, height)
-  const [label2DRenderer, remove2DRendererElement] = createCSS2DRenderer(width, height)
-  const [label3DRenderer, remove3DRendererElement] = createCSS3DRenderer(width, height)
+  const [label2DRenderer, remove2DRendererElement] = createCSS2DRenderer(
+    containerElement,
+    width,
+    height
+  )
+  const [label3DRenderer, remove3DRendererElement] = createCSS3DRenderer(
+    containerElement,
+    width,
+    height
+  )
 
   // 创建模型
   const [box1, box2, box3, box4] = createModels()
