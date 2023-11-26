@@ -239,6 +239,11 @@ const shaderToyList = [
     path: '/shaderToy',
     title: 'shaderToy实验场景',
     componentName: 'ShaderToy'
+  },
+  {
+    path: '/3dShape',
+    title: 'shaderToy三维图形',
+    componentName: '3DShape'
   }
 ]
 

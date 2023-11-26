@@ -29,21 +29,27 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
-const createPlane = () => {
+const createShaderMaterial = () => {
   const vertexShader = `
     void main() {
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `
   const fragmentShader = `
+    uniform vec2 iResolution;
+
     void main() {
-      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
   `
-  const material = new THREE.ShaderMaterial({
+  return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader
   })
+}
+
+const createPlane = () => {
+  const material = createShaderMaterial()
   const plane = new THREE.PlaneGeometry(2, 2)
   return new THREE.Mesh(plane, material)
 }
