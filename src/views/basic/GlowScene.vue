@@ -253,7 +253,7 @@ onMounted(() => {
 <template>
   <div ref="containerElementRef" class="container">
     <span class="button--text" @click="handleSchemeSwitch"
-      >方案切换：当前方案是{{ currentSchemeId === 0 ? '清除深度' : '替换材质' }}</span
+      >点击方案切换：当前方案是{{ currentSchemeId === 0 ? '清除深度' : '替换材质' }}</span
     >
     <canvas ref="canvasElementRef"></canvas>
   </div>
@@ -261,6 +261,7 @@ onMounted(() => {
 
 <style scoped>
 .container {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -273,5 +274,6 @@ onMounted(() => {
   color: #fff;
   font-size: 18px;
   z-index: 1;
+  cursor: pointer;
 }
 </style>

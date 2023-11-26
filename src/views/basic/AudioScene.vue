@@ -207,14 +207,27 @@ onMounted(() => {
 
 <template>
   <div ref="containerElementRef" class="container">
+    <span class="tip">点击场景中方块播放音乐</span>
     <canvas ref="canvasElementRef"></canvas>
   </div>
 </template>
 
 <style scoped>
 .container {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.tip {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
 }
 </style>

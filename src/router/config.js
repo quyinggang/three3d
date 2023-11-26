@@ -236,7 +236,7 @@ const shaderConfigList = [
   },
   {
     path: '/shaderToy',
-    title: 'shader之shaderToy',
+    title: 'shaderToy实验场',
     componentName: 'ShaderToy'
   }
 ]

@@ -93,6 +93,7 @@ watch(
 }
 
 .main {
+  position: relative;
   margin-left: 180px;
   height: 100%;
   background: #000;
