@@ -1,5 +1,3 @@
-import { TYPE_ALIAS } from '@/tools/constants'
-
 const threeBasicConfigList = [
   {
     path: '/base',
@@ -233,10 +231,13 @@ const shaderConfigList = [
     path: '/shaderNoiseShape',
     title: 'shader之噪声扰动',
     componentName: 'NoiseShader2'
-  },
+  }
+]
+
+const shaderToyList = [
   {
     path: '/shaderToy',
-    title: 'shaderToy实验场',
+    title: 'shaderToy实验场景',
     componentName: 'ShaderToy'
   }
 ]
@@ -271,15 +272,19 @@ const effectConfigList = [
 
 const configList = [
   {
-    type: TYPE_ALIAS.basic,
+    dir: 'basic',
     list: [...threeBasicConfigList]
   },
   {
-    type: TYPE_ALIAS.shaders,
+    dir: 'shaders',
     list: [...shaderConfigList]
   },
   {
-    type: TYPE_ALIAS.effects,
+    dir: 'shadertoy',
+    list: [...shaderToyList]
+  },
+  {
+    dir: 'effects',
     list: [...effectConfigList]
   }
 ]
