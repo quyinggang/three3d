@@ -36,13 +36,22 @@ const createShaderMaterial = () => {
     }
   `
   const fragmentShader = `
-    uniform vec2 iResolution;
+    uniform vec3 iResolution;
+    uniform vec4 iMouse;
+    uniform float iTime;
 
     void main() {
+      // 转换坐标至[0, 1]
+      vec2 uv = gl_FragCoord.xy / iResolution.xy;
       gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
   `
   return new THREE.ShaderMaterial({
+    uniforms: {
+      iResolution: { value: new THREE.Vector3(0, 0, 1) },
+      iMouse: { value: new THREE.Vector4(0, 0, 0, 0) },
+      iTime: { value: 0 }
+    },
     vertexShader,
     fragmentShader
   })
@@ -58,8 +67,9 @@ onMounted(() => {
   let raf = null
   const canvasElement = canvasElementRef.value
   const containerElement = containerElementRef.value
-  const width = containerElement.clientWidth
-  const height = containerElement.clientHeight
+  const bounding = containerElement.getBoundingClientRect()
+  const width = bounding.width
+  const height = bounding.height
 
   const scene = createScene()
   const camera = createCamera(width / height)
@@ -68,11 +78,22 @@ onMounted(() => {
   const plane = createPlane()
   scene.add(plane)
 
+  const clock = new THREE.Clock()
+  const uniforms = plane.material.uniforms
+  uniforms.iResolution.value = new THREE.Vector3(width, height, 1)
   const render = () => {
+    const elapsedTime = clock.getElapsedTime()
+    uniforms.iTime.value = elapsedTime
     renderer.render(scene, camera)
     raf = window.requestAnimationFrame(render)
   }
 
+  const handleMouseMove = (event) => {
+    const x = event.clientX - bounding.left
+    const y = event.clientY - bounding.top
+    uniforms.iMouse.value = new THREE.Vector4(x, y, 0, 0)
+  }
+  window.addEventListener('mousemove', handleMouseMove)
   render()
 
   onBeforeUnmount(() => {
@@ -89,6 +110,7 @@ onMounted(() => {
       }
     })
     window.cancelAnimationFrame(raf)
+    window.removeEventListener('mousemove', handleMouseMove)
   })
 })
 </script>
