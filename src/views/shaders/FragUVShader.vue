@@ -107,7 +107,7 @@ const createMesh2 = (width, height) => {
     uniform vec2 uResolution;
 
     void main() {
-      // 将屏幕坐标转换成[-1, 1]范围内原点在中心的坐标系
+      // 将屏幕坐标转换成[-1, 1]范围，原点在屏幕中心，但实际上不规则的长宽比会导致只有最短距离的坐标系范围满足[-1, 1]，另外的会超出这个范围
       vec2 uv = (2.0 * gl_FragCoord.xy - uResolution.xy) / min(uResolution.y, uResolution.x);
 
       // 这种方式是将屏幕坐标转换成[0, 1]范围内原点在左下角的坐标系

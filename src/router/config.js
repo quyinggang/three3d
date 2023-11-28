@@ -241,6 +241,11 @@ const shaderToyList = [
     componentName: 'ShaderToy'
   },
   {
+    path: '/grid',
+    title: 'shaderToy坐标系',
+    componentName: 'Grid'
+  },
+  {
     path: '/3dShape',
     title: 'shaderToy三维图形',
     componentName: '3DShape'

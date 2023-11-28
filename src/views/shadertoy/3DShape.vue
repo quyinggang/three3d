@@ -11,12 +11,8 @@ const createScene = () => {
   return scene
 }
 
-const createCamera = (aspect) => {
-  // 透视投影摄像机
-  const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100)
-  camera.position.set(0, 0, 0.1)
-  camera.lookAt(0, 0, 0)
-  return camera
+const createCamera = () => {
+  return new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1)
 }
 
 const createWebGLRenderer = (canvasElement, width, height) => {
@@ -29,7 +25,7 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
-const createShaderMaterial = () => {
+const createPlane = () => {
   const vertexShader = `
     void main() {
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -40,13 +36,80 @@ const createShaderMaterial = () => {
     uniform vec4 iMouse;
     uniform float iTime;
 
+    mat3 rotateX(float angle) {
+      return mat3(1.0, 0.0, 0.0,
+                0.0, cos(angle), -sin(angle),
+                0.0, sin(angle), cos(angle));
+    }
+    
+    mat3 rotateY(float angle) {
+      return mat3(cos(angle), 0.0, -sin(angle),
+                0.0, 1.0, 0.0,
+                sin(angle), 0.0, cos(angle));
+    }
+    
+    mat3 rotateZ(float angle) {
+      return mat3(cos(angle), -sin(angle), 0.0,
+                sin(angle), cos(angle), 0.0,
+                0.0, 0.0, 1.0);
+    }
+
+    float drawPoint(vec2 p, vec3 screenVertex) {
+      float d = length(screenVertex.xy - p) - 0.05 / screenVertex.z;
+      return 1.0 - smoothstep(0.0, 0.005, d);
+    }
+
+    vec3 cubePoints(vec2 uv, vec2 center) {
+      // 1X1正方体坐标
+      vec3[8] cube;
+      cube[0] = vec3(0.0, 0.0, 0.0);
+      cube[1] = vec3(1.0, 0.0, 0.0);
+      cube[2] = vec3(0.0, 0.0, 1.0);
+      cube[3] = vec3(1.0, 0.0, 1.0);
+      cube[4] = vec3(0.0, 1.0, 0.0);
+      cube[5] = vec3(1.0, 1.0, 0.0);
+      cube[6] = vec3(0.0, 1.0, 1.0);
+      cube[7] = vec3(1.0, 1.0, 1.0);
+
+      float depth = 4.0;
+      vec3[8] screenVertices;
+      for (int j = 0; j < 8; j++) {
+        vec3 vertex = cube[j];
+        // 正方体坐标系原点移到其中心
+        vertex -= vec3(0.5);
+
+        // 旋转
+        vertex = vertex * rotateY(iTime);
+
+        // 深度
+        vertex.z -= depth;
+
+        screenVertices[j] = vec3(-vertex.x / vertex.z, -vertex.y / vertex.z, -vertex.z);
+      }
+
+      float val = 1.0;
+      for (int j = 0; j < 8; j++) {
+        vec3 vertex = screenVertices[j];
+        vertex.xy += center;
+        val *= 1.0 - drawPoint(uv, vertex);
+      }
+      val = 1.0 - val;
+      vec3 vertexColor = vec3(0.0, 1.0, 1.0);
+      vec3 backgroundColor = vec3(0.0);
+      return backgroundColor + val * vertexColor;
+    }
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+      vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
+      vec3 color = cubePoints(uv, vec2(-1.0, 0.5));
+      fragColor = vec4(color, 1.0);
+    }
+
     void main() {
-      // 转换坐标至[0, 1]
-      vec2 uv = gl_FragCoord.xy / iResolution.xy;
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      mainImage(gl_FragColor, gl_FragCoord.xy);
     }
   `
-  return new THREE.ShaderMaterial({
+  const material = new THREE.ShaderMaterial({
     uniforms: {
       iResolution: { value: new THREE.Vector3(0, 0, 1) },
       iMouse: { value: new THREE.Vector4(0, 0, 0, 0) },
@@ -55,10 +118,6 @@ const createShaderMaterial = () => {
     vertexShader,
     fragmentShader
   })
-}
-
-const createPlane = () => {
-  const material = createShaderMaterial()
   const plane = new THREE.PlaneGeometry(2, 2)
   return new THREE.Mesh(plane, material)
 }
@@ -72,15 +131,17 @@ onMounted(() => {
   const height = bounding.height
 
   const scene = createScene()
-  const camera = createCamera(width / height)
+  const camera = createCamera()
   const renderer = createWebGLRenderer(canvasElement, width, height)
 
   const plane = createPlane()
   scene.add(plane)
 
+  const canvas = renderer.domElement
   const clock = new THREE.Clock()
   const uniforms = plane.material.uniforms
-  uniforms.iResolution.value = new THREE.Vector3(width, height, 1)
+  // 注意需要使用canvas的width和hight，即dpr后的大小
+  uniforms.iResolution.value = new THREE.Vector3(canvas.width, canvas.height, 1)
   const render = () => {
     const elapsedTime = clock.getElapsedTime()
     uniforms.iTime.value = elapsedTime

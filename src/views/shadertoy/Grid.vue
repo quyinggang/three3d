@@ -36,10 +36,29 @@ const createPlane = () => {
     uniform vec4 iMouse;
     uniform float iTime;
 
+    vec3 grid(vec2 uv, float gridSize) {
+      float wx = uv.x;
+      float wy = uv.y;
+      float x0 = abs(fract(wx / gridSize - 0.5) - 0.5) / fwidth(wx) * gridSize / 2.0;
+      float z0 = abs(fract(wy / gridSize - 0.5) - 0.5) / fwidth(wy) * gridSize / 2.0;
+
+      float val = 1.0 - clamp(min(x0, z0), 0.0, 1.0);
+
+      vec3 color = val * vec3(0.3);
+
+      // x axis
+      color = mix(vec3(1.0, 0.0, 0.0), color, smoothstep(0.0, 2.0 * fwidth(uv.x), abs(uv.y)));
+      // y axis
+      color = mix(vec3(0.0, 1.0, 0.0), color, smoothstep(0.0, 2.0 * fwidth(uv.y), abs(uv.x)));
+      return color;
+    }
+
     void mainImage(out vec4 fragColor, in vec2 fragCoord) {
       // 归一化坐标[0, 1]
-      vec2 uv = fragCoord.xy / iResolution.xy;
-      fragColor = vec4(vec3(uv.x, uv.y, 0.0), 1.0);
+      // vec2 uv = fragCoord.xy / iResolution.xy;
+      vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
+      vec3 color = grid(uv, 0.5);
+      fragColor = vec4(color, 1.0);
     }
 
     void main() {
