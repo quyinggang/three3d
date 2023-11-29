@@ -59,6 +59,10 @@ const createPlane = () => {
       return 1.0 - smoothstep(0.0, 0.005, d);
     }
 
+    float sdSphere(vec3 p, float s) {
+      return length(p)-s;
+    }
+
     float drawLine(in vec2 p, in vec3 sv1, in vec3 sv2) {
       vec2 lineVec = vec2(sv2.x - sv1.x, sv2.y - sv1.y);
       vec2 pVec = vec2(p.x - sv1.x, p.y - sv1.y);
@@ -150,7 +154,8 @@ const createPlane = () => {
       vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
       vec3 cubePointColor = cubePoints(uv, vec2(-1.0, 0.5));
       vec3 cubeLineColor = cubeLine(uv, vec2(0.0, 0.5));
-      fragColor = vec4(cubePointColor + cubeLineColor + cubeBoxColor, 1.0);
+
+      fragColor = vec4(cubePointColor + cubeLineColor, 1.0);
     }
 
     void main() {
