@@ -35,32 +35,16 @@ const createPlane = () => {
     uniform vec3 iResolution;
     uniform vec4 iMouse;
     uniform float iTime;
-
-    mat3 rotateX(float angle) {
-      return mat3(1.0, 0.0, 0.0,
-                0.0, cos(angle), -sin(angle),
-                0.0, sin(angle), cos(angle));
-    }
     
     mat3 rotateY(float angle) {
       return mat3(cos(angle), 0.0, -sin(angle),
                 0.0, 1.0, 0.0,
                 sin(angle), 0.0, cos(angle));
     }
-    
-    mat3 rotateZ(float angle) {
-      return mat3(cos(angle), -sin(angle), 0.0,
-                sin(angle), cos(angle), 0.0,
-                0.0, 0.0, 1.0);
-    }
 
     float drawPoint(vec2 p, vec3 screenVertex) {
       float d = length(screenVertex.xy - p) - 0.05 / screenVertex.z;
       return 1.0 - smoothstep(0.0, 0.005, d);
-    }
-
-    float sdSphere(vec3 p, float s) {
-      return length(p)-s;
     }
 
     float drawLine(in vec2 p, in vec3 sv1, in vec3 sv2) {
@@ -77,7 +61,7 @@ const createPlane = () => {
       return val;
     }
 
-    vec3[8] projectCube(vec2 center) {
+    vec3[8] projectCube(vec2 center, float depth) {
       // 1X1正方体坐标
       vec3[8] cube;
       cube[0] = vec3(0.0, 0.0, 0.0);
@@ -89,7 +73,6 @@ const createPlane = () => {
       cube[6] = vec3(1.0, 1.0, 1.0);
       cube[7] = vec3(0.0, 1.0, 1.0);
 
-      float depth = 4.0;
       vec3[8] screenVertices;
       for (int j = 0; j < 8; j++) {
         vec3 vertex = cube[j];
@@ -110,7 +93,7 @@ const createPlane = () => {
     }
 
     vec3 cubePoints(vec2 uv, vec2 center) {
-      vec3[8] cube = projectCube(center);
+      vec3[8] cube = projectCube(center, 2.0);
 
       float val = 1.0;
       for (int j = 0; j < 8; j++) {
@@ -121,7 +104,7 @@ const createPlane = () => {
     }
 
     vec3 cubeLine(vec2 uv, vec2 center) {
-      vec3[8] cube = projectCube(center);
+      vec3[8] cube = projectCube(center, 4.0);
 
       ivec2[12] edge;
       edge[0] = ivec2(0, 1);
@@ -152,10 +135,9 @@ const createPlane = () => {
 
     void mainImage(out vec4 fragColor, in vec2 fragCoord) {
       vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
-      vec3 cubePointColor = cubePoints(uv, vec2(-1.0, 0.5));
-      vec3 cubeLineColor = cubeLine(uv, vec2(0.0, 0.5));
-
-      fragColor = vec4(cubePointColor + cubeLineColor, 1.0);
+      vec3 cubePointColor = cubePoints(uv, vec2(0.0, 0.0));
+      vec3 cubeLineColor = cubeLine(uv, vec2(0.0, 0.0));
+      fragColor = vec4(cubePointColor + cubeLineColor , 1.0);
     }
 
     void main() {

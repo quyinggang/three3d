@@ -246,9 +246,9 @@ const shaderToyList = [
     componentName: 'Grid'
   },
   {
-    path: '/3dShape',
-    title: 'shaderToy三维图形',
-    componentName: '3DShape'
+    path: '/depthShape',
+    title: 'shaderToy三维点线',
+    componentName: 'DepthShape'
   }
 ]
 

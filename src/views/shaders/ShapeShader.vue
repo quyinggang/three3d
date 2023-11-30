@@ -31,6 +31,7 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
+// 更多图形可参考：https://iquilezles.org/articles/distfunctions2d/
 const createMesh = () => {
   const vertexShader = `
       varying vec2 vUV;
@@ -174,28 +175,26 @@ const createMesh4 = () => {
 
     varying vec2 vUV;
 
-    float rectangle(vec2 position, vec2 center, float width, float height) {
-      float halfWidth = width * 0.5;
-      float halfHeight = height * 0.5;
-      float step = 0.01;
-      float leftX = center.x - halfWidth;
-      float rightX = center.x + halfWidth;
-      float topY = center.y + halfHeight;
-      float bottomY = center.y - halfHeight;
+    // 正方体
+    float boxDistance( in vec3 p, in vec3 b )  {
+      vec3 q = abs(p) - b;
+      return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+    }
 
-      // smoothstep的前两个参数edge0、edge1，x == edge0返回0.0，x == edge1返回1.0
-      float left = smoothstep(leftX, leftX + step, position.x);
-      float right = smoothstep(rightX, rightX + step, position.x);
-      float top = smoothstep(topY, topY + step, position.y);
-      float bottom = smoothstep(bottomY, bottomY - step, position.y);
-
-      return left - right - top - bottom;
+    float sdOrientedBox( in vec2 p, in vec2 a, in vec2 b, float th ) {
+      float l = length(b-a);
+      vec2  d = (b-a)/l;
+      vec2  q = p-(a+b)*0.5;
+            q = mat2(d.x,-d.y,d.y,d.x)*q;
+            q = abs(q)-vec2(l*0.5,th);
+      return length(max(q,0.0)) + min(max(q.x,q.y),0.0);    
     }
 
     void main() {
-      vec2 center = vec2(0.5, 0.5);
-      float ratio = rectangle(vUV, center, 0.8, 0.8);
-      gl_FragColor = vec4(uColor * ratio, 1.0);
+      float d = sdOrientedBox(vUV, vec2(0.1, 0.5), vec2(0.6, 0.5), 0.25);
+      vec3 color = vec3(0.0) - sign(d) * uColor;
+      color = mix(color, vec3(0.0), 1.0 - smoothstep(0.0,0.015, abs(d)));
+      gl_FragColor = vec4(color, 1.0);
     }
   `
   const material = new THREE.ShaderMaterial({
@@ -228,34 +227,23 @@ const createMesh5 = () => {
 
     varying vec2 vUV;
 
-    // 切变矩阵
-    mat2 skewMatrix(float skewXRad, float skewYRad) {
-      return mat2(1.0, tan(skewXRad), tan(skewYRad), 1.0);
-    }
-
-    float parallelogram(vec2 position, vec2 center, float width, float height, float skewXAngle, float skewYAngle) {
-      float halfWidth = width * 0.5;
-      float halfHeight = height * 0.5;
-      float step = 0.01;
-      float leftX = center.x - halfWidth;
-      float rightX = center.x + halfWidth;
-      float topY = center.y + halfHeight;
-      float bottomY = center.y - halfHeight;
-
-      vec2 skewPosition = position * skewMatrix(radians(skewXAngle), radians(skewYAngle));
-
-      float left = smoothstep(leftX, leftX + step, skewPosition.x);
-      float right = smoothstep(rightX, rightX + step, skewPosition.x);
-      float top = smoothstep(topY, topY + step, skewPosition.y);
-      float bottom = smoothstep(bottomY, bottomY - step, skewPosition.y);
-      
-      return left - right - top - bottom;
+    float sdParallelogram( in vec2 p, float wi, float he, float sk ) {
+      vec2 e = vec2(sk,he);
+      p = (p.y<0.0)?-p:p;
+      vec2  w = p - e; w.x -= clamp(w.x,-wi,wi);
+      vec2  d = vec2(dot(w,w), -w.y);
+      float s = p.x*e.y - p.y*e.x;
+      p = (s<0.0)?-p:p;
+      vec2  v = p - vec2(wi,0); v -= e*clamp(dot(v,e)/dot(e,e),-1.0,1.0);
+      d = min( d, vec2(dot(v,v), wi*he-abs(s)));
+      return sqrt(d.x)*sign(-d.y);
     }
 
     void main() {
-      vec2 center = vec2(0.5, 0.5);
-      float ratio = parallelogram(vUV, center, 0.66, 0.8, -10.0, 0.0);
-      gl_FragColor = vec4(uColor * ratio, 1.0);
+      float d = sdParallelogram(vUV - vec2(0.5), 0.2, 0.3, 0.1);
+      vec3 color = d > 0.0 ? vec3(0.0) : uColor;
+      color = mix(color, uColor, 1.0 - smoothstep(0.0,0.01, abs(d)) );
+      gl_FragColor = vec4(color, 1.0);
     }
   `
   const material = new THREE.ShaderMaterial({
@@ -288,16 +276,18 @@ const createMesh6 = () => {
 
     varying vec2 vUV;
 
-    float straightLine(vec2 position, vec2 start, vec2 end, float lineWidth, float radius) {
-      vec2 direction = position - start;
-      vec2 line = end - start;
-      float h = clamp(dot(direction, line) / dot(line, line), 0.0, 1.0 );
-      return 1.0 - smoothstep(0.0, lineWidth, length(direction - line * h) - radius);
+    float sdSegment(vec2 p, vec2 a, vec2 b) {
+      vec2 pa = p-a, ba = b-a;
+      float h = clamp( dot(pa,ba) / dot(ba,ba), 0.0, 1.0 );
+      return length( pa - ba * h );
     }
 
     void main() {
-      float ratio = straightLine(vUV, vec2(0.5, 0.8), vec2(0.8, 0.2), 0.03, 0.0);
-      gl_FragColor = vec4(uColor * ratio, 1.0);
+      float lineWidth = 0.03;
+      float d = sdSegment(vUV, vec2(0.1, 0.8), vec2(0.8, 0.2));
+      vec3 color = vec3(0.0) - sign(d) * uColor;
+      color = mix(color, uColor, 1.0 - smoothstep(0.0, lineWidth, abs(d)));
+      gl_FragColor = vec4(color, 1.0);
     }
   `
   const material = new THREE.ShaderMaterial({
