@@ -59,6 +59,26 @@ const createPlane = () => {
   return new THREE.Mesh(plane, material)
 }
 
+const bindMouseEvents = (containerElement, bounding, uniforms) => {
+  let isDragging = false
+  const handleMouseMove = (event) => {
+    if (!isDragging) return
+    const x = event.clientX - bounding.left
+    const y = event.clientY - bounding.top
+    uniforms.iMouse.value = new THREE.Vector4(x, y, 0, 0)
+  }
+  const handleUp = () => {
+    isDragging = false
+    window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mouseup', handleUp)
+  }
+  containerElement.addEventListener('mousedown', () => {
+    isDragging = true
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleUp)
+  })
+}
+
 onMounted(() => {
   let raf = null
   const canvasElement = canvasElementRef.value
@@ -86,12 +106,7 @@ onMounted(() => {
     raf = window.requestAnimationFrame(render)
   }
 
-  const handleMouseMove = (event) => {
-    const x = event.clientX - bounding.left
-    const y = event.clientY - bounding.top
-    uniforms.iMouse.value = new THREE.Vector4(x, y, 0, 0)
-  }
-  window.addEventListener('mousemove', handleMouseMove)
+  bindMouseEvents(containerElement, bounding, uniforms)
   render()
 
   onBeforeUnmount(() => {
@@ -108,7 +123,6 @@ onMounted(() => {
       }
     })
     window.cancelAnimationFrame(raf)
-    window.removeEventListener('mousemove', handleMouseMove)
   })
 })
 </script>

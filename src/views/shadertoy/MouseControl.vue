@@ -35,109 +35,113 @@ const createPlane = () => {
     uniform vec3 iResolution;
     uniform vec4 iMouse;
     uniform float iTime;
-    
-    mat3 rotateY(float angle) {
-      return mat3(cos(angle), 0.0, -sin(angle),
-                0.0, 1.0, 0.0,
-                sin(angle), 0.0, cos(angle));
+
+    //t是查找的距离范围
+    #define TMIN 0.1
+    #define TMAX 20.
+    // 最大迭代次数
+    #define RAYMARCH_TIME 128
+    //当前距离是否小于阈值
+    #define PRECISION .001
+    // 球体信息，xyz表示位置，w表示大小
+    #define SPHERE_INFO vec4(0, 0.6, 3, 0.6)
+
+
+    float sdSphere( vec3 p, float s ) {
+      return length(p) - s;
     }
 
-    float drawPoint(vec2 p, vec3 screenVertex) {
-      float d = length(screenVertex.xy - p) - 0.05 / screenVertex.z;
-      return 1.0 - smoothstep(0.0, 0.005, d);
+    float sdBox( vec3 p, vec3 b ) {
+      vec3 q = abs(p) - b;
+      return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
     }
 
-    float drawLine(in vec2 p, in vec3 sv1, in vec3 sv2) {
-      vec2 lineVec = vec2(sv2.x - sv1.x, sv2.y - sv1.y);
-      vec2 pVec = vec2(p.x - sv1.x, p.y - sv1.y);
-      
-      float distToLine = length(cross(vec3(normalize(lineVec), 0.0), vec3(pVec, 0.0)));
-      float distAlongLine = dot(lineVec, pVec)/dot(lineVec, lineVec);
-      
-      float depth = (1.0 - distAlongLine) * sv1.z + distAlongLine * sv2.z;
-      
-      float val = 1.0 - smoothstep(0.0, 0.005, distToLine - 0.005 /depth);
-      val *= step(0.0, distAlongLine) * step(distAlongLine, 1.0);
-      return val;
+    float sdPlane(vec3 p) {
+      return p.y;
     }
 
-    vec3[8] projectCube(vec2 center, float depth) {
-      // 1X1正方体坐标
-      vec3[8] cube;
-      cube[0] = vec3(0.0, 0.0, 0.0);
-      cube[1] = vec3(1.0, 0.0, 0.0);
-      cube[2] = vec3(1.0, 0.0, 1.0);
-      cube[3] = vec3(0.0, 0.0, 1.0);
-      cube[4] = vec3(0.0, 1.0, 0.0);
-      cube[5] = vec3(1.0, 1.0, 0.0);
-      cube[6] = vec3(1.0, 1.0, 1.0);
-      cube[7] = vec3(0.0, 1.0, 1.0);
+    // 返回采样距离可在此实现场景中多个sdf对象合并
+    float map(vec3 p) {
+      vec4 sphere = SPHERE_INFO;
+      float sd = sdSphere(p - sphere.xyz, sphere.w);
+      float pd = sdPlane(p);
 
-      vec3[8] screenVertices;
-      for (int j = 0; j < 8; j++) {
-        vec3 vertex = cube[j];
-        // 正方体坐标系原点移到其中心
-        vertex -= vec3(0.5);
+      float size = 0.5;
+      vec3 box = vec3(sphere.x, size, -sphere.z);
+      float bd = sdBox(p - box, vec3(size));
 
-        // 旋转
-        vertex = vertex * rotateY(iTime);
+      return min(min(sd, pd), bd);
+    }
 
-        // 深度
-        vertex.z -= depth;
+    // 计算法线
+    vec3 calcNormal(vec3 p) {
+      const float h = 0.0001;
+      const vec2 k = vec2(1, -1);
+      return normalize(k.xyy * map(p + k.xyy * h) +
+        k.yyx * map(p + k.yyx * h) +
+        k.yxy * map(p + k.yxy * h) +
+        k.xxx * map(p + k.xxx * h));
+    }
 
-        vec3 screenVertex = vec3(-vertex.x / vertex.z, -vertex.y / vertex.z, -vertex.z);
-        screenVertex.xy += center;
-        screenVertices[j] = screenVertex;
+    // 射线源、射线方向
+    float rayMarch(vec3 ro, vec3 rd){
+      float t = TMIN;
+      for(int i = 0; i < RAYMARCH_TIME && t < TMAX; i++) {
+        vec3 p = ro + t * rd;
+        float d = map(p);
+        if(d < PRECISION) break;
+        t += d;
       }
-      return screenVertices;
+      return t;
     }
 
-    vec3 cubePoints(vec2 uv, vec2 center) {
-      vec3[8] cube = projectCube(center, 2.0);
-
-      float val = 1.0;
-      for (int j = 0; j < 8; j++) {
-        val *= 1.0 - drawPoint(uv, cube[j]);
-      }
-      val = 1.0 - val;
-      return val * vec3(0.0, 1.0, 1.0);
+    // 应用灯光
+    float calcLight(vec3 p){
+        vec3 lightPosition = vec3(0, 2, 0);
+        vec3 lightVector = normalize(lightPosition - p);
+        // 法线
+        vec3 normal = calcNormal(p);
+        
+        float dif = clamp(dot(normal, lightVector), 0., 1.);
+        float d = rayMarch(p + normal * PRECISION , lightVector);
+        if(d < TMAX) {
+          dif*=0.1;
+        }
+        
+        return dif;
     }
 
-    vec3 cubeLine(vec2 uv, vec2 center) {
-      vec3[8] cube = projectCube(center, 4.0);
-
-      ivec2[12] edge;
-      edge[0] = ivec2(0, 1);
-      edge[1] = ivec2(0, 3);
-      edge[2] = ivec2(0, 4);
-      edge[3] = ivec2(1, 2);
-      edge[4] = ivec2(1, 5);
-      edge[5] = ivec2(2, 3);
-      edge[6] = ivec2(2, 6);
-      edge[7] = ivec2(3, 7);
-      edge[8] = ivec2(4, 5);
-      edge[9] = ivec2(5, 6);
-      edge[10] = ivec2(6, 7);
-      edge[11] = ivec2(4, 7);
-
-      float val = 1.0;
-      for (int j = 0; j < 12; j++) {
-        ivec2 index = edge[j];
-        vec3 current = cube[index[0]];
-        vec3 next = cube[index[1]];
-        val *= 1.0 - drawLine(uv, current, next);
-      }
-
-      val = 1.0 - val;
-
-      return val * vec3(0.0, 1.0, 1.0);
+    mat3 setCamera(vec3 pos, vec3 lookAt, float rad) {
+      vec3 z = normalize(lookAt - pos);
+      vec3 cp = vec3(sin(rad), cos(rad), 0.);
+      vec3 x = normalize(cross(z, cp));
+      vec3 y = cross(x, z);
+      return mat3(x, y, z);
     }
 
-    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
       vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
-      vec3 cubePointColor = cubePoints(uv, vec2(0.0, 0.0));
-      vec3 cubeLineColor = cubeLine(uv, vec2(0.0, 0.0));
-      fragColor = vec4(cubePointColor + cubeLineColor , 1.0);
+      vec3 color = vec3(0);
+      vec2 mouse = iMouse.xy / iResolution.xy;
+
+      float time = iTime * 0.5;
+      float radius = 6.0;
+      float mouseX = mouse.x * 10.0;
+      // 摄像机位置（支持圆周运动 + mouse控制）
+      vec3 ro = vec3(radius * cos(time + mouseX), 1.0, radius * sin(time + mouseX));
+      vec3 lookAt = vec3(0, 0, 0);
+      // 摄像机矩阵
+      mat3 cam = setCamera(ro, lookAt, 0.);
+      // 射线方向
+      vec3 rd = normalize(cam * vec3(uv, 1));
+
+      float t = rayMarch(ro, rd);
+
+      if (t < TMAX) {
+        vec3 p = ro + rd * t;
+        float diffuseColor = calcLight(p);
+        fragColor = vec4(vec3(diffuseColor), 1.0);
+      }
     }
 
     void main() {

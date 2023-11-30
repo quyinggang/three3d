@@ -254,6 +254,11 @@ const shaderToyList = [
     path: '/rayMarching',
     title: 'shaderToy之RayMarching',
     componentName: 'RayMarching'
+  },
+  {
+    path: '/mouse',
+    title: 'shaderToy之Mouse控制',
+    componentName: 'MouseControl'
   }
 ]
 
