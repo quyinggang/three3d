@@ -52,7 +52,7 @@ watch(
   top: 0;
   left: 0;
   z-index: 10;
-  width: 180px;
+  width: 200px;
   height: 100%;
   padding-bottom: 20px;
   border-right: 1px solid #e8e8e8;
@@ -94,7 +94,7 @@ watch(
 
 .main {
   position: relative;
-  margin-left: 180px;
+  margin-left: 200px;
   height: 100%;
   background: #000;
 }

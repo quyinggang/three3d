@@ -249,6 +249,11 @@ const shaderToyList = [
     path: '/depthShape',
     title: 'shaderToy三维点线',
     componentName: 'DepthShape'
+  },
+  {
+    path: '/rayMarching',
+    title: 'shaderToy之RayMarching',
+    componentName: 'RayMarching'
   }
 ]
 
