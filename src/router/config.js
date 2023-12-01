@@ -241,9 +241,9 @@ const shaderToyList = [
     componentName: 'ShaderToy'
   },
   {
-    path: '/grid',
+    path: '/fragCoord',
     title: 'shaderToy坐标系',
-    componentName: 'Grid'
+    componentName: 'FragCoordAxes'
   },
   {
     path: '/depthShape',
@@ -259,6 +259,11 @@ const shaderToyList = [
     path: '/mouse',
     title: 'shaderToy之Mouse控制',
     componentName: 'MouseControl'
+  },
+  {
+    path: '/color',
+    title: 'shaderToy之颜色应用',
+    componentName: 'ShapeColor'
   }
 ]
 

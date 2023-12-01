@@ -121,8 +121,7 @@ const createPlane = () => {
 
     void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
       vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
-      vec3 color = vec3(0);
-      vec2 mouse = iMouse.xy / iResolution.xy;
+      vec2 mouse = 2.0 * (iMouse.xy / iResolution.xy - vec2(0.5));
 
       float time = iTime * 0.5;
       float radius = 6.0;
@@ -133,7 +132,7 @@ const createPlane = () => {
       // 摄像机矩阵
       mat3 cam = setCamera(ro, lookAt, 0.);
       // 射线方向
-      vec3 rd = normalize(cam * vec3(uv, 1));
+      vec3 rd = cam * normalize(vec3(uv, 1));
 
       float t = rayMarch(ro, rd);
 
