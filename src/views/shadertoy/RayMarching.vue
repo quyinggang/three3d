@@ -42,13 +42,12 @@ const createPlane = () => {
     uniform vec4 iMouse;
     uniform float iTime;
 
-    //t是查找的距离范围
-    #define TMIN 0.1
-    #define TMAX 20.
-    // 最大迭代次数
-    #define RAYMARCH_TIME 128
-    //当前距离是否小于阈值
-    #define PRECISION .001
+    // 最大查找距离
+    #define MAX_DISTANCE 20.0
+    // 最大前进步数
+    #define MAX_STEPS 128
+    // 命中阀值
+    #define HIT_DISTANCE 0.001
     // 球体信息，xyz表示位置，w表示大小
     #define SPHERE_INFO vec4(0, 1, 6, 1)
 
@@ -82,14 +81,14 @@ const createPlane = () => {
 
     // 射线源、射线方向
     float rayMarch(vec3 ro, vec3 rd){
-      float t = TMIN;
-      for(int i = 0; i < RAYMARCH_TIME && t < TMAX; i++) {
-        vec3 p = ro + t * rd;
+      float td = 0.0;
+      for(int i = 0; td <= MAX_DISTANCE && i < MAX_STEPS; i++) {
+        vec3 p = ro + td * rd;
         float d = map(p);
-        if(d < PRECISION) break;
-        t += d;
+        if(d < HIT_DISTANCE) break;
+        td += d;
       }
-      return t;
+      return td > MAX_DISTANCE ? -1.0 : td;
     }
 
     // 应用灯光
@@ -99,12 +98,7 @@ const createPlane = () => {
         // 法线
         vec3 normal = calcNormal(p);
         
-        float dif = clamp(dot(normal, lightVector), 0., 1.);
-        float d = rayMarch(p + normal * PRECISION , lightVector);
-        if(d < TMAX) {
-          dif*=0.1;
-        }
-        
+        float dif = clamp(dot(normal, lightVector), 0., 1.);  
         return dif;
     }
 
@@ -130,7 +124,7 @@ const createPlane = () => {
 
         float t = rayMarch(ro, rd);
 
-        if (t < TMAX) {
+        if (t > 0.0) {
           vec3 p = ro + rd * t;
           float diffuseColor = calcLight(p);
           fragColor = vec4(vec3(diffuseColor), 1.0);
