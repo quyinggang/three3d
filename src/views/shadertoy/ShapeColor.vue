@@ -71,7 +71,7 @@ const createPlane = () => {
     // 返回采样距离可在此实现场景中多个sdf对象合并
     Shape map(vec3 p) {
       vec4 sphere = SPHERE_INFO;
-      vec3 floorColor = vec3(.5 + 0.3*mod(floor(p.x/2.) + floor(p.z/2.), 2.0));
+      vec3 floorColor = 0.4 + mod(floor(6.0 * p.z) + floor(6.0 * p.x), 2.0) * vec3(0.6);
       return opU(
         Shape(sdPlane(p), floorColor),
         Shape(sdSphere(p - sphere.xyz, sphere.w), vec3(1.0, 0.0, 0.0))
@@ -125,7 +125,7 @@ const createPlane = () => {
       vec2 uv = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.y, iResolution.x);
       vec2 mouse = 2.0 * (iMouse.xy / iResolution.xy - vec2(0.5));
       vec3 color = vec3(0);
-      vec3 backgroundColor = vec3(0.835, 1, 1);
+      vec3 backgroundColor = vec3(0.65, 0.85, 1.0);
       
       float radius = 6.0;
       float mouseX = mouse.x * 10.0;
@@ -142,10 +142,11 @@ const createPlane = () => {
       if (inter.t > 0.0) {
         vec3 p = ro + rd * inter.t;
         float diffuseColor = calcLight(p);
-        color = diffuseColor * inter.color + backgroundColor * 0.2;
+        color = backgroundColor * 0.2 + diffuseColor * inter.color;
       } else {
         color = backgroundColor;
       }
+
       fragColor = vec4(color, 1.0);
     }
 
