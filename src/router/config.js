@@ -234,6 +234,34 @@ const shaderConfigList = [
   }
 ]
 
+const effectConfigList = [
+  {
+    path: '/particleEffect',
+    title: '粒子引擎应用',
+    componentName: 'ParticleEffect'
+  },
+  {
+    path: '/flyLineEffect',
+    title: '飞线效果',
+    componentName: 'FlyLineEffect'
+  },
+  {
+    path: '/transitionEffect',
+    title: '转场过渡',
+    componentName: 'TransitionEffect'
+  },
+  {
+    path: '/cityGrowEffect',
+    title: '城市建筑生长效果',
+    componentName: 'CityGrowEffect'
+  },
+  {
+    path: '/cityEffect',
+    title: '城市特效应用',
+    componentName: 'CityEffect'
+  }
+]
+
 const shaderToyList = [
   {
     path: '/shaderToy',
@@ -264,34 +292,11 @@ const shaderToyList = [
     path: '/color',
     title: 'shaderToy之颜色应用',
     componentName: 'ShapeColor'
-  }
-]
-
-const effectConfigList = [
-  {
-    path: '/particleEffect',
-    title: '粒子引擎应用',
-    componentName: 'ParticleEffect'
   },
   {
-    path: '/flyLineEffect',
-    title: '飞线效果',
-    componentName: 'FlyLineEffect'
-  },
-  {
-    path: '/transitionEffect',
-    title: '转场过渡',
-    componentName: 'TransitionEffect'
-  },
-  {
-    path: '/cityGrowEffect',
-    title: '城市建筑生长效果',
-    componentName: 'CityGrowEffect'
-  },
-  {
-    path: '/cityEffect',
-    title: '城市特效应用',
-    componentName: 'CityEffect'
+    path: '/sky',
+    title: 'shaderToy之天空云层',
+    componentName: 'SkyCloud'
   }
 ]
 
@@ -305,12 +310,12 @@ const configList = [
     list: [...shaderConfigList]
   },
   {
-    dir: 'shadertoy',
-    list: [...shaderToyList]
-  },
-  {
     dir: 'effects',
     list: [...effectConfigList]
+  },
+  {
+    dir: 'shadertoy',
+    list: [...shaderToyList]
   }
 ]
 
