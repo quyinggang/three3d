@@ -47,6 +47,7 @@ const createPlane = () => {
       vec3 color = val * vec3(0.3);
 
       // x axis
+      // fwidth(uv.x)可以认为是一个X轴方向上1个像素的大小
       color = mix(vec3(1.0, 0.0, 0.0), color, smoothstep(0.0, 2.0 * fwidth(uv.x), abs(uv.y)));
       // y axis
       color = mix(vec3(0.0, 1.0, 0.0), color, smoothstep(0.0, 2.0 * fwidth(uv.y), abs(uv.x)));

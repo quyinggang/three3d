@@ -114,15 +114,15 @@ const createPlane = () => {
     }
 
     // 射线源、射线方向
-    float rayMarch(vec3 ro, vec3 rd){
-      float td = 0.0;
-      for(int i = 0; td <= MAX_DISTANCE && i < MAX_STEPS; i++) {
+    float rayMarch(vec3 ro, vec3 rd, float tMin, float tMax){
+      float td = tMin;
+      for(int i = 0; i < MAX_STEPS; i++) {
         vec3 p = ro + td * rd;
         float d = map(p);
-        if(d < HIT_DISTANCE) break;
+        if(d < HIT_DISTANCE || td > tMax) break;
         td += d;
       }
-      return td > MAX_DISTANCE ? -1.0 : td;
+      return td;
     }
 
     vec3 sky(vec3 ro, vec3 rd) {
@@ -160,8 +160,11 @@ const createPlane = () => {
 
     vec3 render(vec3 ro, vec3 rd) {
       vec3 color = vec3(0.0);
-      float t = rayMarch(ro, rd);
-      if (t > 0.0) {
+
+      float tMin = 0.01;
+      float tMax = MAX_DISTANCE;
+      float t = rayMarch(ro, rd, tMin, tMax);
+      if (t < tMax) {
         vec3 p = ro + rd * t;
         // 地平面
         color = chessBoard(p);
