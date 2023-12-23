@@ -171,10 +171,10 @@ onMounted(() => {
     video.play()
   }
   render()
-  document.addEventListener('click', handleClick)
+  containerElement.addEventListener('click', handleClick)
 
   onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClick)
+    containerElement.removeEventListener('click', handleClick)
     renderer.dispose()
     renderer.forceContextLoss()
     scene.traverse((obj) => {
@@ -194,6 +194,7 @@ onMounted(() => {
 
 <template>
   <div ref="containerElementRef" class="container">
+    <span class="tip">点击页面播放视频</span>
     <video id="video" loop crossOrigin="anonymous" playsinline>
       <source :src="videoSource" />
     </video>
@@ -210,5 +211,16 @@ onMounted(() => {
 }
 #video {
   display: none;
+}
+
+.tip {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
 }
 </style>

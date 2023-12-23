@@ -93,13 +93,15 @@ const createControls = (camera, domElement) => {
   return controls
 }
 
-const applyRayCaster = (objects, camera, callback) => {
+const applyRayCaster = (params) => {
+  const { containerElement, objects, camera, callback } = params
+  const bounding = containerElement.getBoundingClientRect()
   // 射线拾取，点击任意模型实现音乐播放与暂停
   const rayCaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2()
   const handleClick = (event) => {
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+    pointer.x = ((event.clientX - bounding.left) / bounding.width) * 2 - 1
+    pointer.y = -((event.clientY - bounding.top) / bounding.height) * 2 + 1
 
     rayCaster.setFromCamera(pointer, camera)
     // 计算物体和射线的焦点
@@ -108,8 +110,8 @@ const applyRayCaster = (objects, camera, callback) => {
       callback && callback()
     }
   }
-  document.addEventListener('click', handleClick)
-  return () => document.removeEventListener('click', handleClick)
+  containerElement.addEventListener('click', handleClick)
+  return () => containerElement.removeEventListener('click', handleClick)
 }
 
 const loadAssets = (onLoaded) => {
@@ -162,9 +164,14 @@ onMounted(() => {
     audioAnalyserInstance = audioAnalyser
     camera.add(listener)
   })
-  const removeClickEvent = applyRayCaster(scene.children, camera, () => {
-    if (!audioInstance) return
-    audioInstance.isPlaying ? audioInstance.pause() : audioInstance.play()
+  const removeClickEvent = applyRayCaster({
+    camera,
+    containerElement,
+    objects: scene.children,
+    callback: () => {
+      if (!audioInstance) return
+      audioInstance.isPlaying ? audioInstance.pause() : audioInstance.play()
+    }
   })
 
   // 创建模型
@@ -218,6 +225,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .tip {

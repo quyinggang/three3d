@@ -80,21 +80,23 @@ const createWebGLRenderer = (canvasElement, width, height) => {
   return renderer
 }
 
-const applyRayCaster = (camera, objects, callback) => {
+const applyRayCaster = (params) => {
+  const { containerElement, camera, objects, callback } = params
+  const containerBounding = containerElement.getBoundingClientRect()
   // 选中绑定TransformControls拖拽点
   const rayCaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2()
   const handleClick = (event) => {
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+    pointer.x = ((event.clientX - containerBounding.left) / containerBounding.width) * 2 - 1
+    pointer.y = -((event.clientY - containerBounding.top) / containerBounding.height) * 2 + 1
     rayCaster.setFromCamera(pointer, camera)
     const intersects = rayCaster.intersectObjects(objects)
     if (intersects.length > 0) {
       callback && callback(intersects[0].object)
     }
   }
-  document.addEventListener('click', handleClick)
-  return () => document.removeEventListener('click', handleClick)
+  containerElement.addEventListener('click', handleClick)
+  return () => containerElement.removeEventListener('click', handleClick)
 }
 
 onMounted(() => {
@@ -133,9 +135,14 @@ onMounted(() => {
   // TransformControls需要添加到场景，可以通过控制其visible来显示隐藏
   scene.add(transformControls)
 
-  const removeClickEvent = applyRayCaster(camera, group.children, (selectedObject) => {
-    // 关联对应的拖拽点并且更改position，共用position变量是关键
-    transformControls.attach(selectedObject)
+  const removeClickEvent = applyRayCaster({
+    camera,
+    containerElement,
+    objects: group.children,
+    callback: (selectedObject) => {
+      // 关联对应的拖拽点并且更改position，共用position变量是关键
+      transformControls.attach(selectedObject)
+    }
   })
 
   const controls = new OrbitControls(camera, renderer.domElement)
@@ -168,6 +175,7 @@ onMounted(() => {
 
 <template>
   <div ref="containerElementRef" class="container">
+    <span class="tip">点击方块实现路线调整</span>
     <canvas ref="canvasElementRef"></canvas>
   </div>
 </template>
@@ -177,5 +185,16 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.tip {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
 }
 </style>
