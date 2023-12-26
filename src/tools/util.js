@@ -17,10 +17,10 @@ export const generateRandomXYZ = (spread) => {
 }
 
 // 三维坐标转屏幕坐标
-export const transform3DTo2D = (camera, worldVector) => {
+export const transform3DTo2D = (camera, worldVector, viewSize) => {
   const vector = worldVector.project(camera)
-  const halfWidth = window.innerWidth / 2
-  const halfHeight = window.innerHeight / 2
+  const halfWidth = viewSize.width / 2
+  const halfHeight = viewSize.height / 2
   return {
     x: Math.round(vector.x * halfWidth + halfWidth),
     y: Math.round(-vector.y * halfHeight + halfHeight)

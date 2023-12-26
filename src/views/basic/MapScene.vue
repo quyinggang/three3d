@@ -95,21 +95,23 @@ const createProvinceShape = (projection, provinceData) => {
   return province
 }
 
-const applyRayCaster = (camera, objects, moveCallback) => {
+const applyRayCaster = (params) => {
+  const { camera, objects, callback, containerElement } = params
+  const bounding = containerElement.getBoundingClientRect()
   const rayCaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2()
   const handlePointerMove = (event) => {
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+    pointer.x = ((event.clientX - bounding.left) / bounding.width) * 2 - 1
+    pointer.y = -((event.clientY - bounding.top) / bounding.height) * 2 + 1
     rayCaster.setFromCamera(pointer, camera)
     const intersects = rayCaster.intersectObjects(objects)
     if (intersects.length > 0) {
-      moveCallback && moveCallback(intersects[0].object)
+      callback && callback(intersects[0].object)
     }
   }
-  document.addEventListener('pointermove', handlePointerMove)
+  containerElement.addEventListener('pointermove', handlePointerMove)
   return () => {
-    document.removeEventListener('pointermove', handlePointerMove)
+    containerElement.removeEventListener('pointermove', handlePointerMove)
   }
 }
 
@@ -137,7 +139,7 @@ onMounted(() => {
         const [x, y] = projection(center)
         province.userData = {
           name,
-          center: transform3DTo2D(camera, new THREE.Vector3(x, -y, 0))
+          center: transform3DTo2D(camera, new THREE.Vector3(x, -y, 0), { width, height })
         }
       }
       mapGroup.add(province)
@@ -145,21 +147,26 @@ onMounted(() => {
     scene.add(mapGroup)
   })
 
-  const removeListenerEvent = applyRayCaster(camera, scene.children, (selectedObject) => {
-    if (!selectedObject || !selectedObject.isMesh) return
-    if (lastSelectedObject) {
-      if (selectedObject.uuid === lastSelectedObject.uuid) return
-      lastSelectedObject.material.color = new THREE.Color('#7FFFD4')
+  const removeListenerEvent = applyRayCaster({
+    camera,
+    objects: scene.children,
+    containerElement,
+    callback: (selectedObject) => {
+      if (!selectedObject || !selectedObject.isMesh) return
+      if (lastSelectedObject) {
+        if (selectedObject.uuid === lastSelectedObject.uuid) return
+        lastSelectedObject.material.color = new THREE.Color('#7FFFD4')
+      }
+      const province = selectedObject.parent
+      if (province && Object.keys(province.userData).length > 0) {
+        const { name, center } = province.userData
+        topElement.textContent = name
+        topElement.style.transform = `translate(${center.x}px, ${center.y}px)`
+      }
+      selectedObject.material.color = new THREE.Color('#FF0000')
+      selectedObject.material.needsUpdate = true
+      lastSelectedObject = selectedObject
     }
-    const province = selectedObject.parent
-    if (province && Object.keys(province.userData).length > 0) {
-      const { name, center } = province.userData
-      topElement.textContent = name
-      topElement.style.transform = `translate(${center.x}px, ${center.y}px)`
-    }
-    selectedObject.material.color = new THREE.Color('#FF0000')
-    selectedObject.material.needsUpdate = true
-    lastSelectedObject = selectedObject
   })
 
   const render = () => {
