@@ -108,7 +108,12 @@ const threeBasicConfigList = [
     path: '/animation',
     title: '人物运动控制',
     componentName: 'AnimationScene'
-  }
+  },
+  {
+    path: '/textPoints',
+    title: '文字粒子化',
+    componentName: 'TextPoints'
+  },
 ]
 
 const shaderConfigList = [
@@ -235,6 +240,11 @@ const shaderConfigList = [
 ]
 
 const effectConfigList = [
+  {
+    path: '/textParticle',
+    title: '文字粒子',
+    componentName: 'TextParticle'
+  },
   {
     path: '/particleEffect',
     title: '粒子引擎应用',
