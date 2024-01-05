@@ -66,8 +66,8 @@ const createVideoPlane = (video) => {
 
       const mesh = new THREE.Mesh(geometry, material)
 
-      mesh.dx = 0.001 * (0.5 - Math.random())
-      mesh.dy = 0.001 * (0.5 - Math.random())
+      mesh.dx = 0.004 * (0.5 - Math.random())
+      mesh.dy = 0.004 * (0.5 - Math.random())
 
       const x = (i - config.xGrid / 2) * planeWidth + planeWidth * 0.5 + (i * config.offset) / 2
       const y = (j - config.yGrid / 2) * planeHeight + planeHeight * 0.5 + (j * config.offset) / 2
@@ -93,19 +93,18 @@ onMounted(() => {
   const plane = createVideoPlane(video)
   scene.add(plane)
 
+  const clock = new THREE.Clock()
   const group = plane.children
-  const offsetMesh = () => {
-    for (const mesh of group) {
-      mesh.rotation.x += 0.4 * mesh.dx
-      mesh.rotation.y += 0.5 * mesh.dy
-
-      mesh.position.x -= 0.6 * mesh.dx
-      mesh.position.y += 0.7 * mesh.dy
-      mesh.position.z += 0.8 * mesh.dx
-    }
-  }
   const render = () => {
-    offsetMesh()
+    const elapsedTime = clock.getElapsedTime()
+    for (const mesh of group) {
+      mesh.rotation.x += Math.sin(elapsedTime * 0.1) * mesh.dx;
+      mesh.rotation.y += Math.sin(elapsedTime * 0.2) * mesh.dy;
+
+      mesh.position.x -= Math.sin(elapsedTime * 0.1) * mesh.dx;
+      mesh.position.y += Math.sin(elapsedTime * 0.3) * mesh.dy;
+      mesh.position.z += Math.cos(elapsedTime * 0.2) * mesh.dx;
+    }
     renderer.render(scene, camera)
     raf = window.requestAnimationFrame(render)
   }
