@@ -246,8 +246,8 @@ const effectConfigList = [
     componentName: 'FlyLineEffect'
   },
   {
-    path: '/videoSplice',
-    title: '视频纹理切割',
+    path: '/videoEffect',
+    title: '视频碎片',
     componentName: 'VideoEffect'
   },
   {
