@@ -241,11 +241,6 @@ const shaderConfigList = [
 
 const effectConfigList = [
   {
-    path: '/textParticle',
-    title: '文字粒子',
-    componentName: 'TextParticle'
-  },
-  {
     path: '/particleEffect',
     title: '粒子引擎应用',
     componentName: 'ParticleEffect'
