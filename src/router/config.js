@@ -325,12 +325,12 @@ const configList = [
     list: [...shaderConfigList]
   },
   {
-    dir: 'effects',
-    list: [...effectConfigList]
-  },
-  {
     dir: 'shadertoy',
     list: [...shaderToyList]
+  },
+  {
+    dir: 'effects',
+    list: [...effectConfigList]
   }
 ]
 
