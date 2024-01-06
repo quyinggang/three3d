@@ -251,6 +251,11 @@ const effectConfigList = [
     componentName: 'VideoEffect'
   },
   {
+    path: '/tweenCameraEffect',
+    title: '插值镜头运动',
+    componentName: 'TweenCameraEffect'
+  },
+  {
     path: '/transitionEffect',
     title: '转场过渡',
     componentName: 'TransitionEffect'
