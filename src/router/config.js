@@ -251,6 +251,11 @@ const effectConfigList = [
     componentName: 'VideoEffect'
   },
   {
+    path: '/imagePointsEffect',
+    title: '图片粒子流',
+    componentName: 'ImagePointsEffect'
+  },
+  {
     path: '/tweenCameraEffect',
     title: '插值镜头运动',
     componentName: 'TweenCameraEffect'
